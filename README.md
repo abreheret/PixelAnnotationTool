@@ -5,6 +5,7 @@ Software that allows you to manually and quickly annotate images in directories.
 The method is pseudo manual because it uses the algorithm [watershed marked](http://docs.opencv.org/3.1.0/d7/d1b/group__imgproc__misc.html#ga3267243e4d3f95165d55a618c65ac6e1) of OpenCV. The general idea is to manually provide the marker with brushes and then to launch the algorithm. Then to correct the errors, we are adding new markers on the erroneous borders and to relaunch the algorithm. This method is illustrated by the annimation gif below :
 
 ![gif_file](giphy.gif)
+youtube : [https://youtu.be/wxi2dInWDnI](https://youtu.be/wxi2dInWDnI)
 
 ----------
 
