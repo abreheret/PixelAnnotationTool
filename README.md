@@ -14,7 +14,7 @@ The method is pseudo manual because it uses the algorithm [watershed marked](htt
 * [OpenCV](http://opencv.org/releases.html) >= 2.4.x 
 * For Windows Compiler : Works under Visual Studio >= 2015
 
-How to build go to [here](scripts_to_build/README.md)
+How to build go to [here](scripts_to_build)
 
 ### License :
 
