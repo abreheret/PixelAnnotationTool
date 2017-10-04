@@ -1,0 +1,400 @@
+{
+    "labels": {
+        "bicycle": {
+            "categorie": "vehicle",
+            "color": [
+                119,
+                11,
+                32
+            ],
+            "id": 33,
+            "id_categorie": 7,
+            "name": "bicycle"
+        },
+        "bridge": {
+            "categorie": "construction",
+            "color": [
+                150,
+                100,
+                100
+            ],
+            "id": 15,
+            "id_categorie": 2,
+            "name": "bridge"
+        },
+        "building": {
+            "categorie": "construction",
+            "color": [
+                70,
+                70,
+                70
+            ],
+            "id": 11,
+            "id_categorie": 2,
+            "name": "building"
+        },
+        "bus": {
+            "categorie": "vehicle",
+            "color": [
+                0,
+                60,
+                100
+            ],
+            "id": 28,
+            "id_categorie": 7,
+            "name": "bus"
+        },
+        "car": {
+            "categorie": "vehicle",
+            "color": [
+                0,
+                0,
+                142
+            ],
+            "id": 26,
+            "id_categorie": 7,
+            "name": "car"
+        },
+        "caravan": {
+            "categorie": "vehicle",
+            "color": [
+                0,
+                0,
+                90
+            ],
+            "id": 29,
+            "id_categorie": 7,
+            "name": "caravan"
+        },
+        "dynamic": {
+            "categorie": "void",
+            "color": [
+                111,
+                74,
+                0
+            ],
+            "id": 5,
+            "id_categorie": 0,
+            "name": "dynamic"
+        },
+        "ego vehicle": {
+            "categorie": "void",
+            "color": [
+                0,
+                0,
+                0
+            ],
+            "id": 1,
+            "id_categorie": 0,
+            "name": "ego vehicle"
+        },
+        "fence": {
+            "categorie": "construction",
+            "color": [
+                190,
+                153,
+                153
+            ],
+            "id": 13,
+            "id_categorie": 2,
+            "name": "fence"
+        },
+        "ground": {
+            "categorie": "void",
+            "color": [
+                81,
+                0,
+                81
+            ],
+            "id": 6,
+            "id_categorie": 0,
+            "name": "ground"
+        },
+        "guard rail": {
+            "categorie": "construction",
+            "color": [
+                180,
+                165,
+                180
+            ],
+            "id": 14,
+            "id_categorie": 2,
+            "name": "guard rail"
+        },
+        "motorcycle": {
+            "categorie": "vehicle",
+            "color": [
+                0,
+                0,
+                230
+            ],
+            "id": 32,
+            "id_categorie": 7,
+            "name": "motorcycle"
+        },
+        "other": {
+            "categorie": "void",
+            "color": [
+                128,
+                128,
+                128
+            ],
+            "id": 35,
+            "id_categorie": 0,
+            "name": "other"
+        },
+        "out of roi": {
+            "categorie": "void",
+            "color": [
+                0,
+                0,
+                0
+            ],
+            "id": 3,
+            "id_categorie": 0,
+            "name": "out of roi"
+        },
+        "parking": {
+            "categorie": "flat",
+            "color": [
+                250,
+                170,
+                160
+            ],
+            "id": 9,
+            "id_categorie": 1,
+            "name": "parking"
+        },
+        "person": {
+            "categorie": "human",
+            "color": [
+                220,
+                20,
+                60
+            ],
+            "id": 24,
+            "id_categorie": 6,
+            "name": "person"
+        },
+        "pole": {
+            "categorie": "object",
+            "color": [
+                153,
+                153,
+                153
+            ],
+            "id": 17,
+            "id_categorie": 3,
+            "name": "pole"
+        },
+        "polegroup": {
+            "categorie": "object",
+            "color": [
+                153,
+                153,
+                153
+            ],
+            "id": 18,
+            "id_categorie": 3,
+            "name": "polegroup"
+        },
+        "rail track": {
+            "categorie": "flat",
+            "color": [
+                230,
+                150,
+                140
+            ],
+            "id": 10,
+            "id_categorie": 1,
+            "name": "rail track"
+        },
+        "rectification border": {
+            "categorie": "void",
+            "color": [
+                0,
+                0,
+                0
+            ],
+            "id": 2,
+            "id_categorie": 0,
+            "name": "rectification border"
+        },
+        "rider": {
+            "categorie": "human",
+            "color": [
+                255,
+                0,
+                0
+            ],
+            "id": 25,
+            "id_categorie": 6,
+            "name": "rider"
+        },
+        "road": {
+            "categorie": "flat",
+            "color": [
+                128,
+                64,
+                128
+            ],
+            "id": 7,
+            "id_categorie": 1,
+            "name": "road"
+        },
+        "road marking": {
+            "categorie": "flat",
+            "color": [
+                250,
+                250,
+                250
+            ],
+            "id": 34,
+            "id_categorie": 1,
+            "name": "road marking"
+        },
+        "sidewalk": {
+            "categorie": "flat",
+            "color": [
+                244,
+                35,
+                232
+            ],
+            "id": 8,
+            "id_categorie": 1,
+            "name": "sidewalk"
+        },
+        "sky": {
+            "categorie": "sky",
+            "color": [
+                70,
+                130,
+                180
+            ],
+            "id": 23,
+            "id_categorie": 5,
+            "name": "sky"
+        },
+        "static": {
+            "categorie": "void",
+            "color": [
+                10,
+                0,
+                0
+            ],
+            "id": 4,
+            "id_categorie": 0,
+            "name": "static"
+        },
+        "terrain": {
+            "categorie": "nature",
+            "color": [
+                152,
+                251,
+                152
+            ],
+            "id": 22,
+            "id_categorie": 4,
+            "name": "terrain"
+        },
+        "traffic light": {
+            "categorie": "object",
+            "color": [
+                250,
+                170,
+                30
+            ],
+            "id": 19,
+            "id_categorie": 3,
+            "name": "traffic light"
+        },
+        "traffic sign": {
+            "categorie": "object",
+            "color": [
+                220,
+                220,
+                0
+            ],
+            "id": 20,
+            "id_categorie": 3,
+            "name": "traffic sign"
+        },
+        "trailer": {
+            "categorie": "vehicle",
+            "color": [
+                0,
+                0,
+                110
+            ],
+            "id": 30,
+            "id_categorie": 7,
+            "name": "trailer"
+        },
+        "train": {
+            "categorie": "vehicle",
+            "color": [
+                0,
+                80,
+                100
+            ],
+            "id": 31,
+            "id_categorie": 7,
+            "name": "train"
+        },
+        "truck": {
+            "categorie": "vehicle",
+            "color": [
+                0,
+                0,
+                70
+            ],
+            "id": 27,
+            "id_categorie": 7,
+            "name": "truck"
+        },
+        "tunnel": {
+            "categorie": "construction",
+            "color": [
+                150,
+                120,
+                90
+            ],
+            "id": 16,
+            "id_categorie": 2,
+            "name": "tunnel"
+        },
+        "unlabeled": {
+            "categorie": "void",
+            "color": [
+                0,
+                0,
+                0
+            ],
+            "id": 0,
+            "id_categorie": 0,
+            "name": "unlabeled"
+        },
+        "vegetation": {
+            "categorie": "nature",
+            "color": [
+                107,
+                142,
+                35
+            ],
+            "id": 21,
+            "id_categorie": 4,
+            "name": "vegetation"
+        },
+        "wall": {
+            "categorie": "construction",
+            "color": [
+                102,
+                102,
+                156
+            ],
+            "id": 12,
+            "id_categorie": 2,
+            "name": "wall"
+        }
+    }
+}
