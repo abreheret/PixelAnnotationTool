@@ -10,7 +10,8 @@ The method is pseudo manual because it uses the algorithm [watershed marked](htt
 
 ### Building Dependencies
 * [Qt](https://www.qt.io/download-open-source/)  >= 5.x
-* [CMake](https://cmake.org/download/) >= 2.8.11 
+* [CMake](https://cmake.org/download/) >= 2.8.x 
+* [OpenCV](http://opencv.org/releases.html) >= 2.4.x 
 * For Windows Compiler : Works under Visual Studio >= 2015
 
 How to build go to [here](scripts_to_build/README.md)
