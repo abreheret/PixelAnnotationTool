@@ -17,7 +17,7 @@ The method is pseudo manual because it uses the algorithm [watershed marked](htt
 How to build go to [here](scripts_to_build)
 
 ### Download binaries :
-Go to release [page](https://github.com/abreheret/PixelAnnotationTool/releases)
+Go to release [page](http://caor-mines-paristech.fr/fr/2017/10/pixel-annotation-tool/)
 
 ### Donate :
 If you like, donate !
