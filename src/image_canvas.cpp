@@ -133,7 +133,7 @@ void ImageCanvas::saveMask() {
 		}
 
 		QFileInfo file(_img_file);
-		QString color_file = file.dir().absolutePath() + "/" + file.baseName() + "color_watershed.png";
+		QString color_file = file.dir().absolutePath() + "/" + file.baseName() + "color_mask.png";
 		result.save(color_file);
 	}
 
