@@ -75,7 +75,7 @@ void ImageCanvas::saveMask() {
 		_watershed.id.save(_watershed_file);
 		QImage result = exportColor(_watershed.id, _ui->id_labels,true);
 		QFileInfo file(_img_file);
-		QString color_file = file.dir().absolutePath() + "/" + file.baseName() + "color_mask.png";
+		QString color_file = file.dir().absolutePath() + "/" + file.baseName() + "_color_mask.png";
 		result.save(color_file);
 	}
 }
