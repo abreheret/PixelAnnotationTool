@@ -3,7 +3,7 @@ project(PixelAnnotationTool)
 
 set(QT5_DIR "~/Qt/5.9.1/msvc2015_64/lib/cmake" CACHE STRING "Additional search paths for QT5")
 set(CMAKE_AUTOMOC ON)
-set(PIXEL_ANNOTATION_VERSION "1.0.0")
+set(PIXEL_ANNOTATION_VERSION "1.1.0")
 
 if(WIN32)
 	if(CMAKE_CL_64)
