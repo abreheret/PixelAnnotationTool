@@ -118,6 +118,67 @@ QImage watershed(const QImage& qimage, const QImage & qmarkers_mask) {
 	return mat2QImage(new_mask);
 }
 
+QImage exportColor(const QImage & mask_id,const Id2Labels & labels,bool without_border) {
+	QImage color = idToColor(mask_id, labels);
+	QImage result = color.copy();
+	if (without_border == false)
+		return result;
+
+	for (int y = 1; y < mask_id.height() - 1; y++) {
+		const uchar * line_prev = mask_id.scanLine(y - 1);
+		const uchar * line_curr = mask_id.scanLine(y);
+		const uchar * line_next = mask_id.scanLine(y + 1);
+		uchar * line_out = result.scanLine(y);
+		for (int X = 1; X < mask_id.width() - 1; X++) {
+			int x = X * 3;
+			int id = line_curr[x];
+			if (labels.find(id) == labels.end()) {
+				std::map<int, int> mapk;
+				mapk[line_prev[x - 1]] = 1;
+
+				if (mapk.find(line_prev[x]) != mapk.end()) mapk[line_prev[x]] ++;
+				else mapk[line_prev[x]] = 1;
+
+				if (mapk.find(line_prev[x + 1]) != mapk.end()) mapk[line_prev[x + 1]] ++;
+				else mapk[line_prev[x + 1]] = 1;
+
+				if (mapk.find(line_curr[x - 1]) != mapk.end()) mapk[line_curr[x - 1]] ++;
+				else mapk[line_curr[x - 1]] = 1;
+
+				if (mapk.find(line_curr[x + 1]) != mapk.end()) mapk[line_curr[x + 1]] ++;
+				else mapk[line_curr[x + 1]] = 1;
+
+				if (mapk.find(line_next[x - 1]) != mapk.end()) mapk[line_next[x - 1]] ++;
+				else mapk[line_next[x - 1]] = 1;
+
+				if (mapk.find(line_next[x]) != mapk.end()) mapk[line_next[x]] ++;
+				else mapk[line_next[x]] = 1;
+
+				if (mapk.find(line_next[x + 1]) != mapk.end()) mapk[line_next[x + 1]] ++;
+				else mapk[line_next[x + 1]] = 1;
+
+				int id_max = 0;
+				int id_resul = mapk.begin()->first;
+				std::map<int, int>::iterator it = mapk.begin();
+				while (it != mapk.end()) {
+					if (it->first != 255) {
+						if (it->second > id_max) {
+							id_max = it->second;
+							id_resul = it->first;
+						}
+					}
+					it++;
+				}
+				line_out[x] = labels[id_resul]->color.red();
+				line_out[x + 1] = labels[id_resul]->color.green();
+				line_out[x + 2] = labels[id_resul]->color.blue();
+			}
+		}
+	}
+	return result;
+}
+
+
 bool isFullZero(const QImage& image) {
 	for (int y = 0; y < image.height(); y++) {
 		const uchar * line = image.scanLine(y);

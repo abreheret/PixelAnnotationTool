@@ -38,6 +38,7 @@ public:
 	QScrollArea    * scroll_area  ;
 	Name2Labels      labels       ;
 	Id2Labels        id_labels    ;
+	QAction        * save_action  ;
 	QAction        * undo_action  ;
 	QAction        * redo_action  ;
 	QString          curr_open_dir;
