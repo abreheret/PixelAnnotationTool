@@ -73,71 +73,11 @@ void ImageCanvas::saveMask() {
 	_mask.id.save(_mask_file);
 	if (!_watershed.id.isNull()) {
 		_watershed.id.save(_watershed_file);
-		QImage color = idToColor(_watershed.id, _ui->id_labels);
-		QImage result = color.copy();
-		for (int y = 1; y < _watershed.id.height()-1; y++) {
-			const uchar * line_prev = _watershed.id.scanLine(y-1);
-			const uchar * line_curr = _watershed.id.scanLine(y);
-			const uchar * line_next = _watershed.id.scanLine(y+1);
-			uchar * line_out = result.scanLine(y);
-			for (int X = 1; X < _watershed.id.width()-1; X ++) {
-				int x = X * 3;
-				int id = line_curr[x];
-
-				if (_ui->id_labels.find(id) == _ui->id_labels.end()) {
-					std::map<int,int> mapk;
-					mapk[line_prev[x - 1]] = 1;
-
-					if(mapk.find(line_prev[x]) != mapk.end() ) mapk[line_prev[x]] ++;
-					else mapk[line_prev[x]] = 1;
-
-					if (mapk.find(line_prev[x+1]) != mapk.end()) mapk[line_prev[x + 1]] ++;
-					else mapk[line_prev[x+1]] = 1;
-
-
-					if (mapk.find(line_curr[x-1]) != mapk.end()) mapk[line_curr[x-1]] ++;
-					else mapk[line_curr[x - 1]] = 1;
-
-					if (mapk.find(line_curr[x+1]) != mapk.end()) mapk[line_curr[x+1]] ++;
-					else mapk[line_curr[x + 1]] = 1;
-
-
-					if (mapk.find(line_next[x-1]) != mapk.end()) mapk[line_next[x-1]] ++;
-					else mapk[line_next[x - 1]] = 1;
-
-					if (mapk.find(line_next[x]) != mapk.end()) mapk[line_next[x]] ++;
-					else mapk[line_next[x ]] = 1;
-
-					if (mapk.find(line_next[x+1]) != mapk.end()) mapk[line_next[x+1]] ++;
-					else mapk[line_next[x + 1]] = 1;
-					
-					int id_max = 0 ;
-					int id_resul = mapk.begin()->first;
-					std::map<int, int>::iterator it = mapk.begin();
-					while (it != mapk.end()) {
-						if (it->first != 255) {
-							if (it->second > id_max) {
-								id_max = it->second;
-								id_resul = it->first;
-							}
-								
-						}
-						it++;
-					}
-					line_out[x] = _ui->id_labels[id_resul]->color.red();
-					line_out[x+1] = _ui->id_labels[id_resul]->color.green();
-					line_out[x+2] = _ui->id_labels[id_resul]->color.blue();
-
-				}
-			}
-		}
-
+		QImage result = exportColor(_watershed.id, _ui->id_labels,true);
 		QFileInfo file(_img_file);
 		QString color_file = file.dir().absolutePath() + "/" + file.baseName() + "color_mask.png";
 		result.save(color_file);
 	}
-
-
 }
 
 void ImageCanvas::scaleChanged(double scale) {
