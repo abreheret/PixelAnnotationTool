@@ -6,6 +6,11 @@ The method is pseudo manual because it uses the algorithm [watershed marked](htt
 
 [![gif_file](giphy.gif)](https://youtu.be/wxi2dInWDnI)
 
+Example :
+
+<img src="https://raw.githubusercontent.com/abreheret/PixelAnnotationTool/master/images_test/Abbey_Road.jpg" width="300"/>
+<img src="https://raw.githubusercontent.com/abreheret/PixelAnnotationTool/master/images_test/Abbey_Road_color_mask.png" width="300"/>
+
 ----------
 
 ### Building Dependencies :
