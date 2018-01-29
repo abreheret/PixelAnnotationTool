@@ -39,7 +39,7 @@ else()
 	set(MINOR_VERSION "UnknownMinor")  
 	set(PATCH_VERSION "UnknownPath") 
 	set(PIXEL_ANNOTATION_VERSION ${GIT_TAG})	
-	message(WARNING "Version number of pl_tbx is warned")
+	message(WARNING "Version number of pixel annoation tool is warned")
 endif()
 # ---------------------- MANAGING VERSION NUMBER ----------------------
 
