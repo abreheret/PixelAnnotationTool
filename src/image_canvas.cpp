@@ -72,11 +72,11 @@ void ImageCanvas::saveMask() {
 
 	_mask.id.save(_mask_file);
 	if (!_watershed.id.isNull()) {
-		_watershed.id.save(_watershed_file);
-		QImage result = exportColor(_watershed.id, _ui->id_labels,true);
+		QImage watershed_without_border = removeBorder(_watershed.id, _ui->id_labels);
+		watershed_without_border.save(_watershed_file);
 		QFileInfo file(_img_file);
 		QString color_file = file.dir().absolutePath() + "/" + file.baseName() + "_color_mask.png";
-		result.save(color_file);
+		idToColor(watershed_without_border, _ui->id_labels).save(color_file);
 	}
 }
 
