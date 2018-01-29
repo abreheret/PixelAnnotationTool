@@ -3,7 +3,6 @@ project(PixelAnnotationTool)
 
 set(QT5_DIR "~/Qt/5.9.1/msvc2015_64/lib/cmake" CACHE STRING "Additional search paths for QT5")
 set(CMAKE_AUTOMOC ON)
-set(PIXEL_ANNOTATION_VERSION "1.1.0")
 
 if(WIN32)
 	if(CMAKE_CL_64)
@@ -17,6 +16,32 @@ elseif(UNIX)
 	set(ARCH_TYPE x86_64)
 endif()
 
+# ---------------------- MANAGING VERSION NUMBER ----------------------
+configure_file(
+  ${CMAKE_CURRENT_SOURCE_DIR}/git_version.cmake.in
+  ${CMAKE_BINARY_DIR}/git_version.cmake
+)
+include(${CMAKE_BINARY_DIR}/git_version.cmake)
+string(REGEX REPLACE "^v?([0-9]+)\\.([0-9]+)\\.([0-9]+)?(.*)$" "\\1;\\2;\\3;\\4;" REGEX_VERSION ${GIT_TAG} )
+LIST(LENGTH REGEX_VERSION n)
+if(${n} GREATER 2 )
+	list(GET REGEX_VERSION 0 MAJOR_VERSION) 
+	list(GET REGEX_VERSION 1 MINOR_VERSION) 
+	list(GET REGEX_VERSION 2 PATCH_VERSION) 
+	if(${n} GREATER 3 )
+		list(GET REGEX_VERSION 3 COMMIT_VERSION) 
+		set(PIXEL_ANNOTATION_VERSION "${MAJOR_VERSION}.${MINOR_VERSION}.${PATCH_VERSION}${COMMIT_VERSION}")	
+	else()
+		set(PIXEL_ANNOTATION_VERSION "${MAJOR_VERSION}.${MINOR_VERSION}.${PATCH_VERSION}")	
+	endif()
+else() 
+	set(MAJOR_VERSION "UnknownMajor") 
+	set(MINOR_VERSION "UnknownMinor")  
+	set(PATCH_VERSION "UnknownPath") 
+	set(PIXEL_ANNOTATION_VERSION ${GIT_TAG})	
+	message(WARNING "Version number of pl_tbx is warned")
+endif()
+# ---------------------- MANAGING VERSION NUMBER ----------------------
 
 find_path(Qt5Widgets_DIR Qt5WidgetsConfig.cmake PATHS "${QT5_DIR}/Qt5Widgets" )
 find_path(Qt5Gui_DIR Qt5GuiConfig.cmake         PATHS "${QT5_DIR}/Qt5Gui"     )
@@ -46,6 +71,7 @@ add_executable(PixelAnnotationTool
 	src/main.cpp 
 	${UI_TEST_HDRS})
 target_link_libraries(PixelAnnotationTool Qt5::Gui Qt5::Widgets ${OpenCV_LIBS})	
+add_custom_command(TARGET PixelAnnotationTool PRE_BUILD COMMAND cmake -P ${CMAKE_BINARY_DIR}/git_version.cmake)
 
 set(OpenCV_BIN ${OpenCV_LIB_PATH}/../bin)
 #message(OpenCV_BIN= ${OpenCV_BIN}

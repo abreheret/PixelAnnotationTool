@@ -1,0 +1,25 @@
+#ifndef   pixel_annotation_tool_version_h
+#define   pixel_annotation_tool_version_h
+
+# ifdef __cplusplus
+extern "C" {
+# endif
+
+#define PIXEL_ANNOTATION_TOOL_ARCH            "@ARCH_TYPE@" /*! Current archi x86 or x64 */
+#define PIXEL_ANNOTATION_TOOL_GIT_BRANCH      "@GIT_BRANCH@" /*! Current name of the branch */
+#define PIXEL_ANNOTATION_TOOL_GIT_COMMIT_HASH "@GIT_COMMIT_HASH@" /*! Current hash of the git branch */
+#define PIXEL_ANNOTATION_TOOL_GIT_DATE		     "@GIT_COMMIT_DATE@" /*! Current date of the git branch */
+#define PIXEL_ANNOTATION_TOOL_GIT_TAG	       "@GIT_TAG@" /*! Current date of the git branch */
+
+#if _DEBUG
+#define PIXEL_ANNOTATION_TOOL_CONF_MODE					"DEBUG-@ARCH_TYPE@" /*! Last compilation mode used */
+#else
+#define PIXEL_ANNOTATION_TOOL_CONF_MODE					"RELEASE-@ARCH_TYPE@"/*! Last compilation mode used */
+#endif
+#define INFO_PIXEL_ANNOTATION_TOOL_VERSION			"@GIT_BRANCH@ - @GIT_TAG@ - @GIT_COMMIT_HASH@ - @GIT_COMMIT_DATE@ - " PIXEL_ANNOTATION_TOOL_CONF_MODE /*! Version name */
+
+# ifdef __cplusplus
+}
+# endif
+
+#endif // pixel_annotation_tool_version_h
