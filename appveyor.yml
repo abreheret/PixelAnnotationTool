@@ -1,0 +1,16 @@
+clone_folder: c:\projects\PixelAnnotationTool
+environment:
+    matrix:
+        - CMAKE_BUILD_TYPE: Release
+
+install:
+    - cmd: set QT5_DIR=C:\Qt\5.9.3\msvc2015_64\lib\cmake
+    - cmd: choco install OpenCV
+    - cmd: set OPENCV_DIR=C:\tools\opencv\build
+    - cmd: cd C:\projects\PixelAnnotationTool
+        
+build_script:
+    - cmd: mkdir build
+    - cmd: cd build
+    - cmd: cmake .. -DQT5_DIR=%QT5_DIR% -DOpenCV_DIR=%OPENCV_DIR% -G"Visual Studio 14 Win64"
+    - cmd: cmake --build . --config Release

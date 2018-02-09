@@ -76,7 +76,6 @@ target_link_libraries(PixelAnnotationTool Qt5::Gui Qt5::Widgets ${OpenCV_LIBS})
 add_custom_command(TARGET PixelAnnotationTool PRE_BUILD COMMAND cmake -P ${CMAKE_BINARY_DIR}/git_version.cmake)
 
 set(OpenCV_BIN ${OpenCV_LIB_PATH}/../bin)
-#message(OpenCV_BIN= ${OpenCV_BIN}
 set(NAME_RELEASE PixelAnnotationTool_${ARCH_TYPE}_v${PIXEL_ANNOTATION_VERSION})
 set(DIR_NAME_RELEASE ${CMAKE_CURRENT_BINARY_DIR}/${NAME_RELEASE})
 set_target_properties( PixelAnnotationTool PROPERTIES RUNTIME_OUTPUT_DIRECTORY_RELEASE ${DIR_NAME_RELEASE}/bin)	
@@ -84,26 +83,28 @@ file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/images_test/Abbey_Road.jpg
           ${CMAKE_CURRENT_SOURCE_DIR}/images_test/Abbey_Road_mask.png 
           ${CMAKE_CURRENT_SOURCE_DIR}/images_test/road1.jpg 
           DESTINATION ${DIR_NAME_RELEASE}/images_test )
+          
+string(REGEX REPLACE "\\." "" CV_VERSION_NUMBER ${OpenCV_VERSION})
+if( "${OpenCV_LIBS}" MATCHES "opencv_world" )
+  set(OpenCV_MODULE_EXPORT "opencv_world")
+else()
+  set(OpenCV_MODULE_EXPORT "opencv_core;opencv_imgcodecs;opencv_imgproc")
+endif()
+
 if( MSVC )
     set(DLLs_DEP_RELEASE "${QT5_DIR}/../../bin/Qt5Widgets.dll"
                          "${QT5_DIR}/../../bin/Qt5Gui.dll"
-                         "${QT5_DIR}/../../bin/Qt5Core.dll"
-                         "${OpenCV_BIN}/opencv_core310.dll"
-                         "${OpenCV_BIN}/opencv_imgcodecs310.dll"
-                         "${OpenCV_BIN}/opencv_imgproc310.dll")
+                         "${QT5_DIR}/../../bin/Qt5Core.dll")
     set(DLLs_DEP_DEBUG   "${QT5_DIR}/../../bin/Qt5Widgetsd.dll"
                          "${QT5_DIR}/../../bin/Qt5Xmld.dll"
                          "${QT5_DIR}/../../bin/Qt5Guid.dll"
-                         "${QT5_DIR}/../../bin/Qt5Cored.dll"
-                         "${OpenCV_BIN}/opencv_core310d.dll"
-                         "${OpenCV_BIN}/opencv_imgcodecs310d.dll"
-                         "${OpenCV_BIN}/opencv_imgproc310d.dll")
-
+                         "${QT5_DIR}/../../bin/Qt5Cored.dll")
+    foreach( _comp ${OpenCV_MODULE_EXPORT})
+      set(DLLs_DEP_RELEASE ${DLLs_DEP_RELEASE} "${OpenCV_BIN}/${_comp}${CV_VERSION_NUMBER}.dll")
+      set(DLLs_DEP_DEBUG ${DLLs_DEP_DEBUG} "${OpenCV_BIN}/${_comp}${CV_VERSION_NUMBER}d.dll")
+      set(DLLs_DEP_RELEASE_DEPLOYMENT ${DLLs_DEP_RELEASE} "${CMAKE_CURRENT_BINARY_DIR}/${_comp}${CV_VERSION_NUMBER}.dll")
+    endforeach()
     file(COPY ${DLLs_DEP_RELEASE} ${DLLs_DEP_DEBUG} DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
-    set( DLLs_DEP_RELEASE_DEPLOYMENT "${CMAKE_CURRENT_BINARY_DIR}/opencv_core310.dll"
-                                     "${CMAKE_CURRENT_BINARY_DIR}/opencv_imgcodecs310.dll"
-                                     "${CMAKE_CURRENT_BINARY_DIR}/opencv_imgproc310.dll" )
-
     file(COPY ${DLLs_DEP_RELEASE_DEPLOYMENT} DESTINATION ${DIR_NAME_RELEASE}/bin)
     add_custom_command(TARGET PixelAnnotationTool POST_BUILD 
                            COMMAND ${QT5_DIR}/../../bin/windeployqt ${DIR_NAME_RELEASE}/bin
