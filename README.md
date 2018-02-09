@@ -28,7 +28,7 @@ Example :
 How to build go to [here](scripts_to_build)
 
 ### Download binaries :
-Go to release [page](http://caor-mines-paristech.fr/en/2017/10/pixel-annotation-tool-2/)
+Go to release [page](https://github.com/abreheret/PixelAnnotationTool/releases)
 
 ### Donate :
 If you like, donate !
