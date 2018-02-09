@@ -2,9 +2,9 @@ PixelAnnotationTool
 ============================
 
 -----------------
-| **`  Linux  `** | **` Windows `** | 
-|-----------------|---------------------|
-| [![Build Status](https://api.travis-ci.org/abreheret/PixelAnnotationTool.svg?branch=master)](https://travis-ci.org/abreheret/PixelAnnotationTool) | [![Appveyor Build Status](https://img.shields.io/appveyor/ci/abreheret/pixelannotationtool.svg)](https://ci.appveyor.com/project/abreheret/pixelannotationtool) |
+| **`  Linux  `** | **` Windows `** | **` Donate  `** | 
+|-----------------|---------------------|---------------------|
+| [![Build Status](https://api.travis-ci.org/abreheret/PixelAnnotationTool.svg?branch=master)](https://travis-ci.org/abreheret/PixelAnnotationTool) | [![Appveyor Build Status](https://img.shields.io/appveyor/ci/abreheret/pixelannotationtool.svg)](https://ci.appveyor.com/project/abreheret/pixelannotationtool) |  [![Donate](https://img.shields.io/badge/Donate-PayPal-green.svg)](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=8K79VKWBS7352) |
 
 
 
@@ -32,6 +32,7 @@ Go to release [page](http://caor-mines-paristech.fr/en/2017/10/pixel-annotation-
 
 ### Donate :
 If you like, donate !
+
 
 Donating is very simple - and secure. Please click [here](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=8K79VKWBS7352) to make a donation. 
 
