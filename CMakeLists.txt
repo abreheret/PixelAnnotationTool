@@ -109,7 +109,7 @@ if( MSVC )
     add_custom_command(TARGET PixelAnnotationTool POST_BUILD 
                            COMMAND ${QT5_DIR}/../../bin/windeployqt ${DIR_NAME_RELEASE}/bin
                            COMMAND ${CMAKE_COMMAND} -E tar "cfv" "${NAME_RELEASE}.zip" --format=zip ${DIR_NAME_RELEASE} )
-else(UNIX)
+elseif(UNIX)
 #    IF("${isSystemDir}" STREQUAL "-1")
 #    SET(CMAKE_INSTALL_RPATH "${CMAKE_INSTALL_PREFIX}/lib")
 #    ENDIF("${isSystemDir}" STREQUAL "-1")
@@ -118,10 +118,10 @@ else(UNIX)
 #        file(COPY ${OpenCV_DIR}/../../lib/${libcv}.so.${OpenCV_VERSION} DESTINATION ${DIR_NAME_RELEASE}/bin) 
 #	file(RENAME ${DIR_NAME_RELEASE}/bin/${libcv}.so.${OpenCV_VERSION} ${DIR_NAME_RELEASE}/bin/${libcv}.so.${OpenCV_VERSION_MAJOR}.${OpenCV_VERSION_MINOR})
 #    endforeach()
-    add_custom_command(TARGET PixelAnnotationTool POST_BUILD 
-                          COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:PixelAnnotationTool> ${DIR_NAME_RELEASE}/bin/PixelAnnotationTool
-                          COMMAND ${CMAKE_CURRENT_SOURCE_DIR}/scripts_to_build/linuxdeployqt ${DIR_NAME_RELEASE}/bin/PixelAnnotationTool -qmake=${QT5_DIR}/../../bin/qmake
-                          COMMAND ${CMAKE_COMMAND} -E tar "cfv" "${NAME_RELEASE}.zip" --format=zip ${DIR_NAME_RELEASE} )
+    # add_custom_command(TARGET PixelAnnotationTool POST_BUILD 
+                          # COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:PixelAnnotationTool> ${DIR_NAME_RELEASE}/bin/PixelAnnotationTool
+                          # COMMAND ${CMAKE_CURRENT_SOURCE_DIR}/scripts_to_build/linuxdeployqt ${DIR_NAME_RELEASE}/bin/PixelAnnotationTool -qmake=${QT5_DIR}/../../bin/qmake
+                          # COMMAND ${CMAKE_COMMAND} -E tar "cfv" "${NAME_RELEASE}.zip" --format=zip ${DIR_NAME_RELEASE} )
 #
 endif()
 
