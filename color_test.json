@@ -1,0 +1,48 @@
+{
+    "labels": {
+        "unlabeled": {
+            "categorie": "void",
+            "color": [
+                0,
+                0,
+                0
+            ],
+            "id": 0,
+            "id_categorie": 0,
+            "name": "unlabeled"
+        },
+        "Red": {
+            "categorie": "Color",
+            "color": [
+                255,
+                0,
+                0
+            ],
+            "id": 1,
+            "id_categorie": 1,
+            "name": "Red"
+        },
+        "Green": {
+            "categorie": "Color",
+            "color": [
+                0,
+                255,
+                0
+            ],
+            "id": 2,
+            "id_categorie": 1,
+            "name": "Green"
+        },
+        "Blue": {
+            "categorie": "Color",
+            "color": [
+                0,
+                0,
+                255
+            ],
+            "id": 3,
+            "id_categorie": 1,
+            "name": "Blue"
+        }
+    }
+}
