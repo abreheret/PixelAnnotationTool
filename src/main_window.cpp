@@ -228,6 +228,7 @@ void MainWindow::loadConfigFile() {
 	QByteArray saveData = open_file.readAll();
 	QJsonDocument loadDoc(QJsonDocument::fromJson(saveData));
 
+	labels.clear();
 	labels.read(loadDoc.object());
 	open_file.close();
 
