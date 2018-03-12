@@ -134,7 +134,8 @@ elseif(UNIX)
 		DEPENDS PixelAnnotationTool)
 	add_custom_target(extract_appimage 
 		COMMAND echo "=== extract_appimage ==="
-	    COMMAND sudo ${CMAKE_CURRENT_SOURCE_DIR}/scripts_to_build/linuxdeployqt-continuous-x86_64.AppImage --appimage-extract 
+		COMMAND chmod +x ${CMAKE_CURRENT_SOURCE_DIR}/scripts_to_build/linuxdeployqt-continuous-x86_64.AppImage
+	    COMMAND ${CMAKE_CURRENT_SOURCE_DIR}/scripts_to_build/linuxdeployqt-continuous-x86_64.AppImage --appimage-extract 
 		DEPENDS copy_pat)
 	
 	find_program(QMAKE_APP qmake PATHS /opt/qt59/bin/ ${QT5_DIR}/../../bin)
