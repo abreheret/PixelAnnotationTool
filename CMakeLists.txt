@@ -43,6 +43,8 @@ else()
 	set(PIXEL_ANNOTATION_VERSION ${GIT_TAG})	
 	message(WARNING "Version number of pixel annoation tool is warned")
 endif()
+
+
 # ---------------------- MANAGING VERSION NUMBER ----------------------
 
 find_path(Qt5Widgets_DIR Qt5WidgetsConfig.cmake PATHS "${QT5_DIR}/Qt5Widgets" )
@@ -78,7 +80,7 @@ add_custom_command(TARGET PixelAnnotationTool PRE_BUILD COMMAND cmake -P ${CMAKE
 set(OpenCV_BIN ${OpenCV_LIB_PATH}/../bin)
 set(NAME_RELEASE PixelAnnotationTool_${ARCH_TYPE}_v${PIXEL_ANNOTATION_VERSION})
 set(DIR_NAME_RELEASE ${CMAKE_CURRENT_BINARY_DIR}/${NAME_RELEASE})
-set_target_properties( PixelAnnotationTool PROPERTIES RUNTIME_OUTPUT_DIRECTORY_RELEASE ${DIR_NAME_RELEASE}/bin)	
+set_target_properties( PixelAnnotationTool PROPERTIES RUNTIME_OUTPUT_DIRECTORY_RELEASE ${DIR_NAME_RELEASE})	
 file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/images_test/Abbey_Road.jpg 
           ${CMAKE_CURRENT_SOURCE_DIR}/images_test/Abbey_Road_mask.png 
           ${CMAKE_CURRENT_SOURCE_DIR}/images_test/road1.jpg 
@@ -90,6 +92,15 @@ if( "${OpenCV_LIBS}" MATCHES "opencv_world" )
 else()
   set(OpenCV_MODULE_EXPORT "opencv_core;opencv_imgcodecs;opencv_imgproc")
 endif()
+
+find_program(CURL curl)
+if( CURL-NOTFOUND )
+	message(STATUS "Curl is not found")
+else()
+	message(STATUS "Curl is found")
+endif()
+
+file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/default.png DESTINATION ${DIR_NAME_RELEASE}/ )
 
 if( MSVC )
     set(DLLs_DEP_RELEASE "${QT5_DIR}/../../bin/Qt5Widgets.dll"
@@ -105,23 +116,48 @@ if( MSVC )
       set(DLLs_DEP_RELEASE_DEPLOYMENT ${DLLs_DEP_RELEASE} "${CMAKE_CURRENT_BINARY_DIR}/${_comp}${CV_VERSION_NUMBER}.dll")
     endforeach()
     file(COPY ${DLLs_DEP_RELEASE} ${DLLs_DEP_DEBUG} DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
-    file(COPY ${DLLs_DEP_RELEASE_DEPLOYMENT} DESTINATION ${DIR_NAME_RELEASE}/bin)
-    add_custom_command(TARGET PixelAnnotationTool POST_BUILD 
-                           COMMAND ${QT5_DIR}/../../bin/windeployqt ${DIR_NAME_RELEASE}/bin
-                           COMMAND ${CMAKE_COMMAND} -E tar "cfv" "${NAME_RELEASE}.zip" --format=zip ${DIR_NAME_RELEASE} )
+    file(COPY ${DLLs_DEP_RELEASE_DEPLOYMENT} DESTINATION ${DIR_NAME_RELEASE})
+	
+	add_custom_target(make_zip 
+		COMMAND ${QT5_DIR}/../../bin/windeployqt ${DIR_NAME_RELEASE}
+		COMMAND ${CMAKE_COMMAND} -E tar "cfv" "${NAME_RELEASE}.zip" --format=zip ${DIR_NAME_RELEASE}
+		DEPENDS PixelAnnotationTool)
+	if( NOT CURL-NOTFOUND )
+		add_custom_target(upload_file
+		COMMAND curl --upload-file "${NAME_RELEASE}.zip" https://transfer.sh/${NAME_RELEASE}.zip 
+		DEPENDS make_zip)
+	endif()
 elseif(UNIX)
-#    IF("${isSystemDir}" STREQUAL "-1")
-#    SET(CMAKE_INSTALL_RPATH "${CMAKE_INSTALL_PREFIX}/lib")
-#    ENDIF("${isSystemDir}" STREQUAL "-1")
-#    set(opecncv_dep libopencv_imgproc libopencv_imgcodecs libopencv_core)
-#    foreach(libcv ${opecncv_dep})
-#        file(COPY ${OpenCV_DIR}/../../lib/${libcv}.so.${OpenCV_VERSION} DESTINATION ${DIR_NAME_RELEASE}/bin) 
-#	file(RENAME ${DIR_NAME_RELEASE}/bin/${libcv}.so.${OpenCV_VERSION} ${DIR_NAME_RELEASE}/bin/${libcv}.so.${OpenCV_VERSION_MAJOR}.${OpenCV_VERSION_MINOR})
-#    endforeach()
-    # add_custom_command(TARGET PixelAnnotationTool POST_BUILD 
-                          # COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:PixelAnnotationTool> ${DIR_NAME_RELEASE}/bin/PixelAnnotationTool
-                          # COMMAND ${CMAKE_CURRENT_SOURCE_DIR}/scripts_to_build/linuxdeployqt ${DIR_NAME_RELEASE}/bin/PixelAnnotationTool -qmake=${QT5_DIR}/../../bin/qmake
-                          # COMMAND ${CMAKE_COMMAND} -E tar "cfv" "${NAME_RELEASE}.zip" --format=zip ${DIR_NAME_RELEASE} )
-#
+	add_custom_target(copy_pat 
+		COMMAND echo "=== copy_pat ==="
+	    COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:PixelAnnotationTool> ${DIR_NAME_RELEASE}/PixelAnnotationTool 
+		DEPENDS PixelAnnotationTool)
+	add_custom_target(extract_appimage 
+		COMMAND echo "=== extract_appimage ==="
+	    COMMAND ${CMAKE_CURRENT_SOURCE_DIR}/scripts_to_build/linuxdeployqt-continuous-x86_64.AppImage --appimage-extract 
+		DEPENDS copy_pat)
+	
+	find_program(QMAKE_APP qmake PATHS /opt/qt59/bin/ ${QT5_DIR}/../../bin)
+	if( QMAKE_APP-NOTFOUND )
+		message(STATUS "qmake is not found")
+	else()
+		message(STATUS "qmake is found here : ${QMAKE_APP}")
+		add_custom_target(linux_deploy_qt 
+			COMMAND echo "=== ${CMAKE_BINARY_DIR}/squashfs-root/usr/bin/linuxdeployqt ${DIR_NAME_RELEASE}/PixelAnnotationTool -appimage -qmake=${QMAKE_APP} ==="
+			COMMAND ${CMAKE_BINARY_DIR}/squashfs-root/usr/bin/linuxdeployqt ${DIR_NAME_RELEASE}/PixelAnnotationTool -appimage -qmake=${QMAKE_APP} 
+			DEPENDS extract_appimage)
+		add_custom_target(make_zip 
+			COMMAND echo "=== make_zip ==="
+			COMMAND ${CMAKE_COMMAND} -E rename Application-x86_64.AppImage PixelAnnotationTool_x86_64_v121.AppImage
+			DEPENDS linux_deploy_qt)		
+		if( NOT CURL-NOTFOUND )
+			add_custom_target(upload_file
+			  COMMAND curl --upload-file PixelAnnotationTool_x86_64_v121.AppImage https://transfer.sh/PixelAnnotationTool_x86_64_v121.AppImage 
+			  DEPENDS make_zip)
+		endif()			
+	endif()
 endif()
+
+
+
 
