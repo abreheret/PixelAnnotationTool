@@ -149,11 +149,11 @@ elseif(UNIX)
 			DEPENDS extract_appimage)
 		add_custom_target(make_zip 
 			COMMAND echo "=== make_zip ==="
-			COMMAND ${CMAKE_COMMAND} -E rename Application-x86_64.AppImage PixelAnnotationTool_x86_64_v121.AppImage
+			COMMAND ${CMAKE_COMMAND} -E rename Application-x86_64.AppImage PixelAnnotationTool_x86_64_${GIT_TAG}.AppImage
 			DEPENDS linux_deploy_qt)		
 		if( NOT CURL-NOTFOUND )
 			add_custom_target(upload_file
-			  COMMAND curl --upload-file PixelAnnotationTool_x86_64_v121.AppImage https://transfer.sh/PixelAnnotationTool_x86_64_v121.AppImage 
+			  COMMAND curl --upload-file PixelAnnotationTool_x86_64_${GIT_TAG}.AppImage https://transfer.sh/PixelAnnotationTool_x86_64_v121.AppImage 
 			  DEPENDS make_zip)
 		endif()			
 	endif()
