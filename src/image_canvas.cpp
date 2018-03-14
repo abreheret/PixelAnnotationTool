@@ -5,8 +5,9 @@
 #include <QtDebug>
 #include <QtWidgets>
 
-ImageCanvas::ImageCanvas(QWidget * parent, MainWindow *ui) :
-	QLabel(parent) ,
+ImageCanvas::ImageCanvas(QScrollArea * scroll_parent, MainWindow *ui) :
+	QLabel(scroll_parent) ,
+	_scroll_parent(scroll_parent),
 	_ui(ui),
 	_alpha(0.5),
 	_pen_size(30) {

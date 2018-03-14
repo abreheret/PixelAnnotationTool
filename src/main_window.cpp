@@ -15,6 +15,7 @@
 #include <QColorDialog>
 #include <QTextStream>
 #include "pixel_annotation_tool_version.h"
+#include <pl_version.h>
 
 #include "about_dialog.h"
 
@@ -25,8 +26,6 @@ MainWindow::MainWindow(QWidget *parent, Qt::WindowFlags flags)
 	setWindowTitle(QApplication::translate("MainWindow", "PixelAnnotationTool " PIXEL_ANNOTATION_TOOL_GIT_TAG, Q_NULLPTR));
 	list_label->setSpacing(1);
 
-	scroll_area = new QScrollArea;
-	image_canvas = new ImageCanvas(scroll_area, this);
 	save_action = new QAction(tr("&Save current image"), this);
 	undo_action = new QAction(tr("&Undo"), this);
 	redo_action = new QAction(tr("&Redo"), this);
@@ -40,28 +39,13 @@ MainWindow::MainWindow(QWidget *parent, Qt::WindowFlags flags)
 	menuEdit->addAction(undo_action);
 	menuEdit->addAction(redo_action);
 
-	image_canvas->setSizePolicy(QSizePolicy::Ignored, QSizePolicy::Ignored);
-	image_canvas->setScaledContents(true);
+	tabWidget->clear();
 
-	scroll_area->setBackgroundRole(QPalette::Dark);
-	scroll_area->setWidget(image_canvas);
-
-	setCentralWidget(scroll_area);
-
-	connect(spinbox_scale, SIGNAL(valueChanged(double)), image_canvas, SLOT(scaleChanged(double)));
-	connect(spinbox_alpha, SIGNAL(valueChanged(double)), image_canvas, SLOT(alphaChanged(double)));
-	connect(spinbox_pen_size, SIGNAL(valueChanged(int)), image_canvas, SLOT(setSizePen(int)));
-	connect(button_watershed, SIGNAL(released()), this, SLOT(runWatershed()));
-	connect(checkbox_watershed_mask, SIGNAL(clicked()), image_canvas, SLOT(update()));
-	connect(checkbox_manuel_mask, SIGNAL(clicked()), image_canvas, SLOT(update()));
-	connect(actionClear, SIGNAL(triggered()), image_canvas, SLOT(clearMask()));
-		
-	connect(actionOpen_config_file, SIGNAL(triggered()), this, SLOT(loadConfigFile()));
-	connect(actionSave_config_file, SIGNAL(triggered()), this, SLOT(saveConfigFile()));
-
-	connect(undo_action, SIGNAL(triggered()), image_canvas, SLOT(undo()));
-	connect(redo_action, SIGNAL(triggered()), image_canvas, SLOT(redo()));
-	connect(save_action, SIGNAL(triggered()), image_canvas, SLOT(saveMask()));
+	connect(button_watershed      , SIGNAL(released())            , this, SLOT(runWatershed()  ));
+	connect(actionOpen_config_file, SIGNAL(triggered())           , this, SLOT(loadConfigFile()));
+	connect(actionSave_config_file, SIGNAL(triggered())           , this, SLOT(saveConfigFile()));
+	connect(tabWidget             , SIGNAL(tabCloseRequested(int)), this, SLOT(closeTab(int)   ));
+	connect(tabWidget             , SIGNAL(currentChanged(int))   , this, SLOT(updateConnect(int)));
 
 	labels = defaulfLabels();
 
@@ -71,7 +55,13 @@ MainWindow::MainWindow(QWidget *parent, Qt::WindowFlags flags)
 	connect(list_label, SIGNAL(itemDoubleClicked(QListWidgetItem*)), this, SLOT(changeColor(QListWidgetItem*)));
 
 	
+	
 }
+
+void MainWindow::closeTab(int index) {
+	tabWidget->removeTab(index);
+}
+
 void MainWindow::loadConfigLabels() {
 	list_label->clear();
 	QMapIterator<QString, LabelInfo> it(labels);
@@ -138,6 +128,53 @@ void MainWindow::runWatershed() {
 	image_canvas->update();
 }
 
+void MainWindow::updateConnect() {
+	connect(spinbox_scale, SIGNAL(valueChanged(double)), image_canvas, SLOT(scaleChanged(double)));
+	connect(spinbox_alpha, SIGNAL(valueChanged(double)), image_canvas, SLOT(alphaChanged(double)));
+	connect(spinbox_pen_size, SIGNAL(valueChanged(int)), image_canvas, SLOT(setSizePen(int)));
+	connect(checkbox_watershed_mask, SIGNAL(clicked()), image_canvas, SLOT(update()));
+	connect(checkbox_manuel_mask, SIGNAL(clicked()), image_canvas, SLOT(update()));
+	connect(actionClear, SIGNAL(triggered()), image_canvas, SLOT(clearMask()));
+	connect(undo_action, SIGNAL(triggered()), image_canvas, SLOT(undo()));
+	connect(redo_action, SIGNAL(triggered()), image_canvas, SLOT(redo()));
+	connect(save_action, SIGNAL(triggered()), image_canvas, SLOT(saveMask()));
+}
+
+ImageCanvas * MainWindow::newImageCanvas() {
+	scroll_area = new QScrollArea;
+	image_canvas = new ImageCanvas(scroll_area, this);
+	image_canvas->setSizePolicy(QSizePolicy::Ignored, QSizePolicy::Ignored);
+	image_canvas->setScaledContents(true);
+	scroll_area->setBackgroundRole(QPalette::Dark);
+	scroll_area->setWidget(image_canvas);
+	updateConnect();
+	return image_canvas;
+}
+
+void MainWindow::updateConnect(int index) {
+	image_canvas = static_cast<ImageCanvas *>(tabWidget->widget(index));
+	scroll_area = image_canvas->getScrollParent();
+	updateConnect();
+}
+
+ImageCanvas * MainWindow::getImageCanvas(QString name) {
+	for (int i = 0; i < tabWidget->count(); i++) {
+		if (tabWidget->tabText(i) == name) {
+			image_canvas = static_cast<ImageCanvas *>(tabWidget->widget(i));
+			updateConnect();
+			scroll_area = image_canvas->getScrollParent();
+			return image_canvas;
+		}
+	}
+	image_canvas = newImageCanvas();
+	scroll_area = image_canvas->getScrollParent();
+	QString iDir = currentDir();
+	QString filepath(iDir + "/" + name);
+	image_canvas->loadImage(filepath);
+	tabWidget->addTab(scroll_area, name);
+	return image_canvas;
+}
+
 QString MainWindow::currentDir() const {
 	QTreeWidgetItem *current = tree_widget_img->currentItem();
 	if (!current || !current->parent())
@@ -160,8 +197,7 @@ void MainWindow::on_tree_widget_img_currentItemChanged(QTreeWidgetItem *current,
 	if (iFile.isEmpty() || iDir.isEmpty())
 		return;
 
-	QString filepath(iDir + "/" + iFile);
-	image_canvas->loadImage(filepath);
+	image_canvas = getImageCanvas(iFile);
 }
 
 void MainWindow::on_actionOpenDir_triggered() {

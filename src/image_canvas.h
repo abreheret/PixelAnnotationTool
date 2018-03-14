@@ -6,6 +6,7 @@
 
 #include <QLabel>
 #include <QPen>
+#include <QScrollArea>
 
 class MainWindow;
 
@@ -14,7 +15,7 @@ class ImageCanvas : public QLabel {
 
 public:
 
-	ImageCanvas(QWidget * parent, MainWindow *ui);
+	ImageCanvas(QScrollArea * scroll_parent, MainWindow *ui);
 
 	void setId(int id);
 	void setMask(const ImageMask & mask);
@@ -26,6 +27,7 @@ public:
 	void refresh();
 	void updateMaskColor(const Id2Labels & labels) { _mask.updateColor(labels); }
 	void loadImage(const QString &file);
+	QScrollArea * getScrollParent() const { return _scroll_parent; }
 
 protected:
 	void mouseMoveEvent(QMouseEvent * event) override;
@@ -46,9 +48,11 @@ public slots :
 	
 private:
 	MainWindow *_ui;
+	
 	void _initPixmap();
 	void _drawFillCircle(QMouseEvent * e);
 
+	QScrollArea     *_scroll_parent    ;
 	double           _scale            ;
 	double           _alpha            ;
 	QImage           _image            ;
