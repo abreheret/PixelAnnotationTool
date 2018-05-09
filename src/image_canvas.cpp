@@ -82,11 +82,14 @@ void ImageCanvas::saveMask() {
 
 	_mask.id.save(_mask_file);
 	if (!_watershed.id.isNull()) {
-		QImage watershed_without_border = removeBorder(_watershed.id, _ui->id_labels);
-		watershed_without_border.save(_watershed_file);
+        QImage watershed = _watershed.id;
+        if (!_ui->checkbox_border_ws->isChecked()) {
+            watershed = removeBorder(_watershed.id, _ui->id_labels);
+        }
+		watershed.save(_watershed_file);
 		QFileInfo file(_img_file);
 		QString color_file = file.dir().absolutePath() + "/" + file.baseName() + "_color_mask.png";
-		idToColor(watershed_without_border, _ui->id_labels).save(color_file);
+		idToColor(watershed, _ui->id_labels).save(color_file);
 	}
     _undo_list.clear();
     _undo_index = 0;

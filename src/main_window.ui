@@ -229,6 +229,13 @@
         <widget class="QListWidget" name="list_label"/>
        </item>
        <item>
+        <widget class="QCheckBox" name="checkbox_border_ws">
+         <property name="text">
+          <string>keep border provide by the watershed</string>
+         </property>
+        </widget>
+       </item>
+       <item>
         <widget class="QCheckBox" name="checkbox_manuel_mask">
          <property name="text">
           <string>Manuel Mask</string>
