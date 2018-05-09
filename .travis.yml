@@ -9,6 +9,11 @@ os:
 
 env:
   - CONFIG=Release
+  
+branches:
+  only:
+  - master
+  - dev
 
 before_install:
     - QT_VERSION_MM=59
