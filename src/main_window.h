@@ -53,7 +53,7 @@ public:
 	void updateConnect(const ImageCanvas * ic);
     void allDisconnnect(const ImageCanvas * ic);
     void runWatershed(ImageCanvas * ic);
-    	
+    void setStarAtNameOfTab(bool star);
 
 public slots:
 

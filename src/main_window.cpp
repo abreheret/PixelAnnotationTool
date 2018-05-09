@@ -1,6 +1,6 @@
 #include "main_window.h"
 #include "utils.h"
-
+#include <QException>
 #include <QDebug>
 #include <QFileDialog>
 #include <QMessageBox>
@@ -48,21 +48,27 @@ MainWindow::MainWindow(QWidget *parent, Qt::WindowFlags flags)
 	connect(tabWidget             , SIGNAL(currentChanged(int))               , this, SLOT(updateConnect(int)));
     connect(tree_widget_img       , SIGNAL(itemClicked(QTreeWidgetItem *,int)), this, SLOT(treeWidgetClicked()));
 
-    //disconnect(button_watershed, SIGNAL(released()), this, SLOT(runWatershed()));
-
 	labels = defaulfLabels();
 
 	loadConfigLabels();
 
 	connect(list_label, SIGNAL(currentItemChanged(QListWidgetItem*, QListWidgetItem*)), this, SLOT(changeLabel(QListWidgetItem*, QListWidgetItem*)));
 	connect(list_label, SIGNAL(itemDoubleClicked(QListWidgetItem*)), this, SLOT(changeColor(QListWidgetItem*)));
-
-	
-	
 }
 
 void MainWindow::closeTab(int index) {
     ImageCanvas * ic = getImageCanvas(index);
+    if (ic == NULL)
+        throw std::exception("error index");
+
+    if (ic->isNotSaved()) {
+        QMessageBox::StandardButton reply = QMessageBox::question(this, "Current image is not saved",
+            "You will close the current image, Would you like saved image before ?", QMessageBox::Yes | QMessageBox::No);
+        if (reply == QMessageBox::Yes) {
+            ic->saveMask();
+        }
+    }
+
     tabWidget->removeTab(index);
     delete ic;
     if (tabWidget->count() == 0 ) {
@@ -141,6 +147,21 @@ void MainWindow::runWatershed() {
         runWatershed(ic);
 }
 
+void MainWindow::setStarAtNameOfTab(bool star) {
+    if (tabWidget->count() > 0) {
+        int index = tabWidget->currentIndex();
+        QString name = tabWidget->tabText(index);
+        if (star && !name.endsWith("*")) { //add star
+            name += "*";
+            tabWidget->setTabText(index, name);
+        } else if (!star && name.endsWith("*")) { //remove star
+            int pos = name.lastIndexOf('*');
+            name = name.left(pos);
+            tabWidget->setTabText(index, name);
+        }
+    }
+}
+
 void MainWindow::updateConnect(const ImageCanvas * ic) {
     if (ic == NULL) return;
     connect(spinbox_scale, SIGNAL(valueChanged(double)), ic, SLOT(scaleChanged(double)));
@@ -191,7 +212,7 @@ ImageCanvas * MainWindow::getImageCanvas(int index) {
 
 int MainWindow::getImageCanvas(QString name, ImageCanvas * ic) {
 	for (int i = 0; i < tabWidget->count(); i++) {
-		if (tabWidget->tabText(i) == name) {
+		if (tabWidget->tabText(i).startsWith(name) ) {
             ic = getImageCanvas(i);
 			return i;
 		}

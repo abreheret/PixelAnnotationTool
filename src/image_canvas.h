@@ -29,6 +29,7 @@ public:
 	void updateMaskColor(const Id2Labels & labels) { _mask.updateColor(labels); }
 	void loadImage(const QString &file);
 	QScrollArea * getScrollParent() const { return _scroll_parent; }
+    bool isNotSaved() const { return _undo_list.size() > 1; }
 
 protected:
 	void mouseMoveEvent(QMouseEvent * event) override;

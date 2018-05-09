@@ -88,6 +88,9 @@ void ImageCanvas::saveMask() {
 		QString color_file = file.dir().absolutePath() + "/" + file.baseName() + "_color_mask.png";
 		idToColor(watershed_without_border, _ui->id_labels).save(color_file);
 	}
+    _undo_list.clear();
+    _undo_index = 0;
+    _ui->setStarAtNameOfTab(false);
 }
 
 void ImageCanvas::scaleChanged(double scale) {
@@ -164,6 +167,7 @@ void ImageCanvas::mouseReleaseEvent(QMouseEvent * e) {
 		}
 		_undo_list.push_back(_mask);
 		_undo_index++;
+        _ui->setStarAtNameOfTab(true);
 		_ui->undo_action->setEnabled(true);
 	}
 
