@@ -4,7 +4,7 @@ environment:
         - CMAKE_BUILD_TYPE: Release
 
 install:
-    - cmd: set QT5_DIR=C:\Qt\5.9.3\msvc2015_64\lib\cmake
+    - cmd: set QT5_DIR=C:\Qt\5.10.1\msvc2015_64\lib\cmake
     - cmd: choco install OpenCV
     - cmd: choco install curl
     - cmd: set OPENCV_DIR=C:\tools\opencv\build
