@@ -15,7 +15,6 @@
 #include <QColorDialog>
 #include <QTextStream>
 #include "pixel_annotation_tool_version.h"
-#include <pl_version.h>
 
 #include "about_dialog.h"
 
