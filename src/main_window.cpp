@@ -66,7 +66,7 @@ void MainWindow::closeCurrentTab() {
 void MainWindow::closeTab(int index) {
     ImageCanvas * ic = getImageCanvas(index);
     if (ic == NULL)
-        throw std::exception("error index");
+        throw std::logic_error("error index");
 
     if (ic->isNotSaved()) {
         QMessageBox::StandardButton reply = QMessageBox::question(this, "Current image is not saved",
