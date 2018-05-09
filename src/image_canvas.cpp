@@ -5,12 +5,14 @@
 #include <QtDebug>
 #include <QtWidgets>
 
-ImageCanvas::ImageCanvas(QWidget * parent, MainWindow *ui) :
-	QLabel(parent) ,
+ImageCanvas::ImageCanvas(MainWindow *ui) :
+    QLabel() ,
 	_ui(ui),
 	_alpha(0.5),
 	_pen_size(30) {
 
+    _scroll_parent = new QScrollArea(ui);
+    setParent(_scroll_parent);
 	resize(800,600);
 	_scale = 1.0;
 	_initPixmap();
@@ -21,6 +23,14 @@ ImageCanvas::ImageCanvas(QWidget * parent, MainWindow *ui) :
 	_undo_list.clear();
 	_undo_index = 0;
 	_undo = false;
+
+    _scroll_parent->setBackgroundRole(QPalette::Dark);
+    _scroll_parent->setWidget(this);
+
+}
+
+ImageCanvas::~ImageCanvas() {
+    _scroll_parent->deleteLater();
 }
 
 void ImageCanvas::_initPixmap() {
@@ -52,7 +62,7 @@ void ImageCanvas::loadImage(const QString &filename) {
 	_undo_index = 0;
 	if (QFile(_mask_file).exists()) {
 		_mask = ImageMask(_mask_file,_ui->id_labels);
-		emit(_ui->button_watershed->released());
+        _ui->runWatershed(this);// button_watershed->released());
 		_ui->checkbox_manuel_mask->setChecked(true);
 		_undo_list.push_back(_mask);
 		_undo_index++;
@@ -72,12 +82,18 @@ void ImageCanvas::saveMask() {
 
 	_mask.id.save(_mask_file);
 	if (!_watershed.id.isNull()) {
-		QImage watershed_without_border = removeBorder(_watershed.id, _ui->id_labels);
-		watershed_without_border.save(_watershed_file);
+        QImage watershed = _watershed.id;
+        if (!_ui->checkbox_border_ws->isChecked()) {
+            watershed = removeBorder(_watershed.id, _ui->id_labels);
+        }
+		watershed.save(_watershed_file);
 		QFileInfo file(_img_file);
 		QString color_file = file.dir().absolutePath() + "/" + file.baseName() + "_color_mask.png";
-		idToColor(watershed_without_border, _ui->id_labels).save(color_file);
+		idToColor(watershed, _ui->id_labels).save(color_file);
 	}
+    _undo_list.clear();
+    _undo_index = 0;
+    _ui->setStarAtNameOfTab(false);
 }
 
 void ImageCanvas::scaleChanged(double scale) {
@@ -154,6 +170,7 @@ void ImageCanvas::mouseReleaseEvent(QMouseEvent * e) {
 		}
 		_undo_list.push_back(_mask);
 		_undo_index++;
+        _ui->setStarAtNameOfTab(true);
 		_ui->undo_action->setEnabled(true);
 	}
 
@@ -208,15 +225,14 @@ void ImageCanvas::clearMask() {
 void ImageCanvas::wheelEvent(QWheelEvent * event) {
 	int delta = event->delta() > 0 ? 1 : -1;
 	if (Qt::ShiftModifier == event->modifiers()) {
-		_ui->scroll_area->verticalScrollBar()->setEnabled(false);
+        _scroll_parent->verticalScrollBar()->setEnabled(false);
 		int value = _ui->spinbox_pen_size->value() + delta * _ui->spinbox_pen_size->singleStep();
 		_ui->spinbox_pen_size->setValue(value);
 		emit(_ui->spinbox_pen_size->valueChanged(value));
 		setSizePen(value);
 		repaint();
 	} else if (Qt::ControlModifier == event->modifiers()) {
-		QScrollArea * sc = _ui->scroll_area;
-		sc->verticalScrollBar()->setEnabled(false);
+		_scroll_parent->verticalScrollBar()->setEnabled(false);
 		double value = _ui->spinbox_scale->value() + delta * _ui->spinbox_scale->singleStep();
 		value = std::min<double>(_ui->spinbox_scale->maximum(),value);
 		value = std::max<double>(_ui->spinbox_scale->minimum(), value);
@@ -225,7 +241,7 @@ void ImageCanvas::wheelEvent(QWheelEvent * event) {
 		scaleChanged(value);
 		repaint();
 	} else {
-		_ui->scroll_area->verticalScrollBar()->setEnabled(true);
+        _scroll_parent->verticalScrollBar()->setEnabled(true);
 	}
 }
 
