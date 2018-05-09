@@ -37,7 +37,7 @@ MainWindow::MainWindow(QWidget *parent, Qt::WindowFlags flags)
 	redo_action->setEnabled(false);
 
 	menuFile->addAction(save_action);
-    menuFile->addAction(close_tab_action);
+    menuEdit->addAction(close_tab_action);
 	menuEdit->addAction(undo_action);
 	menuEdit->addAction(redo_action);
 
@@ -60,7 +60,9 @@ MainWindow::MainWindow(QWidget *parent, Qt::WindowFlags flags)
 }
 
 void MainWindow::closeCurrentTab() {
-    closeTab(tabWidget->currentIndex());
+    int index = tabWidget->currentIndex();
+    if(index>=0)
+        closeTab(index);
 }
 
 void MainWindow::closeTab(int index) {
