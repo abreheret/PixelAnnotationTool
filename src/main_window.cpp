@@ -41,11 +41,12 @@ MainWindow::MainWindow(QWidget *parent, Qt::WindowFlags flags)
 
 	tabWidget->clear();
     
-	connect(button_watershed      , SIGNAL(released())            , this, SLOT(runWatershed()  ));
-	connect(actionOpen_config_file, SIGNAL(triggered())           , this, SLOT(loadConfigFile()));
-	connect(actionSave_config_file, SIGNAL(triggered())           , this, SLOT(saveConfigFile()));
-	connect(tabWidget             , SIGNAL(tabCloseRequested(int)), this, SLOT(closeTab(int)   ));
-	connect(tabWidget             , SIGNAL(currentChanged(int))   , this, SLOT(updateConnect(int)));
+	connect(button_watershed      , SIGNAL(released())                        , this, SLOT(runWatershed()  ));
+	connect(actionOpen_config_file, SIGNAL(triggered())                       , this, SLOT(loadConfigFile()));
+	connect(actionSave_config_file, SIGNAL(triggered())                       , this, SLOT(saveConfigFile()));
+	connect(tabWidget             , SIGNAL(tabCloseRequested(int))            , this, SLOT(closeTab(int)   ));
+	connect(tabWidget             , SIGNAL(currentChanged(int))               , this, SLOT(updateConnect(int)));
+    connect(tree_widget_img       , SIGNAL(itemClicked(QTreeWidgetItem *,int)), this, SLOT(treeWidgetClicked()));
 
     //disconnect(button_watershed, SIGNAL(released()), this, SLOT(runWatershed()));
 
@@ -62,8 +63,11 @@ MainWindow::MainWindow(QWidget *parent, Qt::WindowFlags flags)
 
 void MainWindow::closeTab(int index) {
     ImageCanvas * ic = getImageCanvas(index);
+    tabWidget->removeTab(index);
     delete ic;
-	tabWidget->removeTab(index);
+    if (tabWidget->count() == 0 ) {
+        image_canvas = NULL;
+    }
 }
 
 void MainWindow::loadConfigLabels() {
@@ -172,6 +176,8 @@ ImageCanvas * MainWindow::newImageCanvas() {
 }
 
 void MainWindow::updateConnect(int index) {
+    if (index < 0 || index >= tabWidget->count())
+        return;
     allDisconnnect(image_canvas);
     image_canvas = getImageCanvas(index);
 	updateConnect(image_canvas);
@@ -215,15 +221,22 @@ QString MainWindow::currentFile() const {
 	return current->text(0);
 }
 
-void MainWindow::on_tree_widget_img_currentItemChanged(QTreeWidgetItem *current, QTreeWidgetItem *previous) {
-	QString iFile = currentFile();
-	QString iDir = currentDir();
-	if (iFile.isEmpty() || iDir.isEmpty())
-		return;
+
+
+void MainWindow::treeWidgetClicked() {
+    QString iFile = currentFile();
+    QString iDir = currentDir();
+    if (iFile.isEmpty() || iDir.isEmpty())
+        return;
     allDisconnnect(image_canvas);
-	int index = getImageCanvas(iFile, image_canvas);
+    int index = getImageCanvas(iFile, image_canvas);
     updateConnect(image_canvas);
     tabWidget->setCurrentIndex(index);
+
+}
+
+void MainWindow::on_tree_widget_img_currentItemChanged(QTreeWidgetItem *current, QTreeWidgetItem *previous) {
+    treeWidgetClicked();
 }
 
 void MainWindow::on_actionOpenDir_triggered() {

@@ -30,7 +30,7 @@ ImageCanvas::ImageCanvas(MainWindow *ui) :
 }
 
 ImageCanvas::~ImageCanvas() {
-    delete _scroll_parent;
+    _scroll_parent->deleteLater();
 }
 
 void ImageCanvas::_initPixmap() {

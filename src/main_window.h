@@ -68,6 +68,7 @@ public slots:
 	void on_actionAbout_triggered();
 	void closeTab(int index);
 	void updateConnect(int index);
+    void treeWidgetClicked();
 };
 
 #endif
