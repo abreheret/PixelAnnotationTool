@@ -1,6 +1,6 @@
 #include "main_window.h"
 #include "utils.h"
-
+#include <QException>
 #include <QDebug>
 #include <QFileDialog>
 #include <QMessageBox>
@@ -24,9 +24,7 @@ MainWindow::MainWindow(QWidget *parent, Qt::WindowFlags flags)
 	setupUi(this);
 	setWindowTitle(QApplication::translate("MainWindow", "PixelAnnotationTool " PIXEL_ANNOTATION_TOOL_GIT_TAG, Q_NULLPTR));
 	list_label->setSpacing(1);
-
-	scroll_area = new QScrollArea;
-	image_canvas = new ImageCanvas(scroll_area, this);
+    image_canvas = NULL;
 	save_action = new QAction(tr("&Save current image"), this);
 	undo_action = new QAction(tr("&Undo"), this);
 	redo_action = new QAction(tr("&Redo"), this);
@@ -40,28 +38,14 @@ MainWindow::MainWindow(QWidget *parent, Qt::WindowFlags flags)
 	menuEdit->addAction(undo_action);
 	menuEdit->addAction(redo_action);
 
-	image_canvas->setSizePolicy(QSizePolicy::Ignored, QSizePolicy::Ignored);
-	image_canvas->setScaledContents(true);
-
-	scroll_area->setBackgroundRole(QPalette::Dark);
-	scroll_area->setWidget(image_canvas);
-
-	setCentralWidget(scroll_area);
-
-	connect(spinbox_scale, SIGNAL(valueChanged(double)), image_canvas, SLOT(scaleChanged(double)));
-	connect(spinbox_alpha, SIGNAL(valueChanged(double)), image_canvas, SLOT(alphaChanged(double)));
-	connect(spinbox_pen_size, SIGNAL(valueChanged(int)), image_canvas, SLOT(setSizePen(int)));
-	connect(button_watershed, SIGNAL(released()), this, SLOT(runWatershed()));
-	connect(checkbox_watershed_mask, SIGNAL(clicked()), image_canvas, SLOT(update()));
-	connect(checkbox_manuel_mask, SIGNAL(clicked()), image_canvas, SLOT(update()));
-	connect(actionClear, SIGNAL(triggered()), image_canvas, SLOT(clearMask()));
-		
-	connect(actionOpen_config_file, SIGNAL(triggered()), this, SLOT(loadConfigFile()));
-	connect(actionSave_config_file, SIGNAL(triggered()), this, SLOT(saveConfigFile()));
-
-	connect(undo_action, SIGNAL(triggered()), image_canvas, SLOT(undo()));
-	connect(redo_action, SIGNAL(triggered()), image_canvas, SLOT(redo()));
-	connect(save_action, SIGNAL(triggered()), image_canvas, SLOT(saveMask()));
+	tabWidget->clear();
+    
+	connect(button_watershed      , SIGNAL(released())                        , this, SLOT(runWatershed()  ));
+	connect(actionOpen_config_file, SIGNAL(triggered())                       , this, SLOT(loadConfigFile()));
+	connect(actionSave_config_file, SIGNAL(triggered())                       , this, SLOT(saveConfigFile()));
+	connect(tabWidget             , SIGNAL(tabCloseRequested(int))            , this, SLOT(closeTab(int)   ));
+	connect(tabWidget             , SIGNAL(currentChanged(int))               , this, SLOT(updateConnect(int)));
+    connect(tree_widget_img       , SIGNAL(itemClicked(QTreeWidgetItem *,int)), this, SLOT(treeWidgetClicked()));
 
 	labels = defaulfLabels();
 
@@ -69,9 +53,28 @@ MainWindow::MainWindow(QWidget *parent, Qt::WindowFlags flags)
 
 	connect(list_label, SIGNAL(currentItemChanged(QListWidgetItem*, QListWidgetItem*)), this, SLOT(changeLabel(QListWidgetItem*, QListWidgetItem*)));
 	connect(list_label, SIGNAL(itemDoubleClicked(QListWidgetItem*)), this, SLOT(changeColor(QListWidgetItem*)));
-
-	
 }
+
+void MainWindow::closeTab(int index) {
+    ImageCanvas * ic = getImageCanvas(index);
+    if (ic == NULL)
+        throw std::exception("error index");
+
+    if (ic->isNotSaved()) {
+        QMessageBox::StandardButton reply = QMessageBox::question(this, "Current image is not saved",
+            "You will close the current image, Would you like saved image before ?", QMessageBox::Yes | QMessageBox::No);
+        if (reply == QMessageBox::Yes) {
+            ic->saveMask();
+        }
+    }
+
+    tabWidget->removeTab(index);
+    delete ic;
+    if (tabWidget->count() == 0 ) {
+        image_canvas = NULL;
+    }
+}
+
 void MainWindow::loadConfigLabels() {
 	list_label->clear();
 	QMapIterator<QString, LabelInfo> it(labels);
@@ -131,11 +134,95 @@ void MainWindow::changeLabel(QListWidgetItem* current, QListWidgetItem* previous
 	image_canvas->setId(labels[key].id);
 }
 
-void MainWindow::runWatershed() {
-	image_canvas->setWatershedMask(watershed(image_canvas->getImage(), image_canvas->getMask().id));
+void MainWindow::runWatershed(ImageCanvas * ic) {
+	ic->setWatershedMask(watershed(ic->getImage(), ic->getMask().id));
 	checkbox_watershed_mask->setCheckState(Qt::CheckState::Checked);
-	//checkbox_manuel_mask->setCheckState(Qt::CheckState::Unchecked);
-	image_canvas->update();
+	ic->update();
+}
+
+void MainWindow::runWatershed() {
+    ImageCanvas * ic = image_canvas;
+    if( ic != NULL)
+        runWatershed(ic);
+}
+
+void MainWindow::setStarAtNameOfTab(bool star) {
+    if (tabWidget->count() > 0) {
+        int index = tabWidget->currentIndex();
+        QString name = tabWidget->tabText(index);
+        if (star && !name.endsWith("*")) { //add star
+            name += "*";
+            tabWidget->setTabText(index, name);
+        } else if (!star && name.endsWith("*")) { //remove star
+            int pos = name.lastIndexOf('*');
+            name = name.left(pos);
+            tabWidget->setTabText(index, name);
+        }
+    }
+}
+
+void MainWindow::updateConnect(const ImageCanvas * ic) {
+    if (ic == NULL) return;
+    connect(spinbox_scale, SIGNAL(valueChanged(double)), ic, SLOT(scaleChanged(double)));
+    connect(spinbox_alpha, SIGNAL(valueChanged(double)), ic, SLOT(alphaChanged(double)));
+    connect(spinbox_pen_size, SIGNAL(valueChanged(int)), ic, SLOT(setSizePen(int)));
+	connect(checkbox_watershed_mask, SIGNAL(clicked()), ic, SLOT(update()));
+	connect(checkbox_manuel_mask, SIGNAL(clicked()), ic, SLOT(update()));
+	connect(actionClear, SIGNAL(triggered()), ic, SLOT(clearMask()));
+	connect(undo_action, SIGNAL(triggered()), ic, SLOT(undo()));
+	connect(redo_action, SIGNAL(triggered()), ic, SLOT(redo()));
+	connect(save_action, SIGNAL(triggered()), ic, SLOT(saveMask()));
+}
+
+void MainWindow::allDisconnnect(const ImageCanvas * ic) {
+    if (ic == NULL) return;
+    disconnect(spinbox_scale, SIGNAL(valueChanged(double)), ic, SLOT(scaleChanged(double)));
+    disconnect(spinbox_alpha, SIGNAL(valueChanged(double)), ic, SLOT(alphaChanged(double)));
+    disconnect(spinbox_pen_size, SIGNAL(valueChanged(int)), ic, SLOT(setSizePen(int)));
+    disconnect(checkbox_watershed_mask, SIGNAL(clicked()), ic, SLOT(update()));
+    disconnect(checkbox_manuel_mask, SIGNAL(clicked()), ic, SLOT(update()));
+    disconnect(actionClear, SIGNAL(triggered()), ic, SLOT(clearMask()));
+    disconnect(undo_action, SIGNAL(triggered()), ic, SLOT(undo()));
+    disconnect(redo_action, SIGNAL(triggered()), ic, SLOT(redo()));
+    disconnect(save_action, SIGNAL(triggered()), ic, SLOT(saveMask()));
+}
+
+ImageCanvas * MainWindow::newImageCanvas() {
+    ImageCanvas * ic = new ImageCanvas( this);
+	ic->setSizePolicy(QSizePolicy::Ignored, QSizePolicy::Ignored);
+	ic->setScaledContents(true);
+	updateConnect(ic);
+	return ic;
+}
+
+void MainWindow::updateConnect(int index) {
+    if (index < 0 || index >= tabWidget->count())
+        return;
+    allDisconnnect(image_canvas);
+    image_canvas = getImageCanvas(index);
+	updateConnect(image_canvas);
+}
+
+ImageCanvas * MainWindow::getImageCanvas(int index) {
+    QScrollArea * scroll_area = static_cast<QScrollArea *>(tabWidget->widget(index));
+    ImageCanvas * ic = static_cast<ImageCanvas*>(scroll_area->widget());
+    return ic;
+}
+
+int MainWindow::getImageCanvas(QString name, ImageCanvas * ic) {
+	for (int i = 0; i < tabWidget->count(); i++) {
+		if (tabWidget->tabText(i).startsWith(name) ) {
+            ic = getImageCanvas(i);
+			return i;
+		}
+	}
+	ic = newImageCanvas();
+	QString iDir = currentDir();
+	QString filepath(iDir + "/" + name);
+	ic->loadImage(filepath);
+    int index = tabWidget->addTab(ic->getScrollParent(), name);
+    
+	return index;
 }
 
 QString MainWindow::currentDir() const {
@@ -154,14 +241,22 @@ QString MainWindow::currentFile() const {
 	return current->text(0);
 }
 
-void MainWindow::on_tree_widget_img_currentItemChanged(QTreeWidgetItem *current, QTreeWidgetItem *previous) {
-	QString iFile = currentFile();
-	QString iDir = currentDir();
-	if (iFile.isEmpty() || iDir.isEmpty())
-		return;
 
-	QString filepath(iDir + "/" + iFile);
-	image_canvas->loadImage(filepath);
+
+void MainWindow::treeWidgetClicked() {
+    QString iFile = currentFile();
+    QString iDir = currentDir();
+    if (iFile.isEmpty() || iDir.isEmpty())
+        return;
+    allDisconnnect(image_canvas);
+    int index = getImageCanvas(iFile, image_canvas);
+    updateConnect(image_canvas);
+    tabWidget->setCurrentIndex(index);
+
+}
+
+void MainWindow::on_tree_widget_img_currentItemChanged(QTreeWidgetItem *current, QTreeWidgetItem *previous) {
+    treeWidgetClicked();
 }
 
 void MainWindow::on_actionOpenDir_triggered() {

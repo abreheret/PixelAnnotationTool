@@ -30,12 +30,17 @@ public:
     MainWindow(QWidget *parent = 0, Qt::WindowFlags flags = 0);
 
 private:
-	ImageCanvas * image_canvas;
+	
 	void loadConfigLabels();
+	ImageCanvas * newImageCanvas();
+	int getImageCanvas(QString name, ImageCanvas *ic) ;
+    ImageCanvas * getImageCanvas(int index);
 
 public:
+	ImageCanvas   *  image_canvas ;
+    //std::vector<ImageCanvas*> _image_canvas;
+	//QScrollArea   *  scroll_area  ;
 
-	QScrollArea    * scroll_area  ;
 	Name2Labels      labels       ;
 	Id2Labels        id_labels    ;
 	QAction        * save_action  ;
@@ -45,6 +50,10 @@ public:
 public:
 	QString currentDir() const;
 	QString currentFile() const;
+	void updateConnect(const ImageCanvas * ic);
+    void allDisconnnect(const ImageCanvas * ic);
+    void runWatershed(ImageCanvas * ic);
+    void setStarAtNameOfTab(bool star);
 
 public slots:
 
@@ -55,8 +64,11 @@ public slots:
 	void runWatershed();
 	void on_tree_widget_img_currentItemChanged(QTreeWidgetItem *, QTreeWidgetItem *);
 	void on_actionOpenDir_triggered();
+	//void on_actionOpen_jsq_triggered();
 	void on_actionAbout_triggered();
-
+	void closeTab(int index);
+	void updateConnect(int index);
+    void treeWidgetClicked();
 };
 
 #endif
