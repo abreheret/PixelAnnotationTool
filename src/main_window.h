@@ -37,7 +37,8 @@ private:
 	
 public:
 	ImageCanvas   *  image_canvas ;
-	QScrollArea   *  scroll_area  ;
+    //std::vector<ImageCanvas*> _image_canvas;
+	//QScrollArea   *  scroll_area  ;
 
 	Name2Labels      labels       ;
 	Id2Labels        id_labels    ;
@@ -49,7 +50,7 @@ public:
 	QString currentDir() const;
 	QString currentFile() const;
 	void updateConnect();
-	
+    	
 
 public slots:
 

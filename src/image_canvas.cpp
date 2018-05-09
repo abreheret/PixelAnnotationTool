@@ -5,13 +5,14 @@
 #include <QtDebug>
 #include <QtWidgets>
 
-ImageCanvas::ImageCanvas(QScrollArea * scroll_parent, MainWindow *ui) :
-	QLabel(scroll_parent) ,
-	_scroll_parent(scroll_parent),
+ImageCanvas::ImageCanvas(MainWindow *ui) :
+    QLabel() ,
 	_ui(ui),
 	_alpha(0.5),
 	_pen_size(30) {
 
+    _scroll_parent = new QScrollArea(ui);
+    setParent(_scroll_parent);
 	resize(800,600);
 	_scale = 1.0;
 	_initPixmap();
@@ -22,6 +23,14 @@ ImageCanvas::ImageCanvas(QScrollArea * scroll_parent, MainWindow *ui) :
 	_undo_list.clear();
 	_undo_index = 0;
 	_undo = false;
+
+    _scroll_parent->setBackgroundRole(QPalette::Dark);
+    _scroll_parent->setWidget(this);
+
+}
+
+ImageCanvas::~ImageCanvas() {
+    delete _scroll_parent;
 }
 
 void ImageCanvas::_initPixmap() {
@@ -209,15 +218,14 @@ void ImageCanvas::clearMask() {
 void ImageCanvas::wheelEvent(QWheelEvent * event) {
 	int delta = event->delta() > 0 ? 1 : -1;
 	if (Qt::ShiftModifier == event->modifiers()) {
-		_ui->scroll_area->verticalScrollBar()->setEnabled(false);
+        _scroll_parent->verticalScrollBar()->setEnabled(false);
 		int value = _ui->spinbox_pen_size->value() + delta * _ui->spinbox_pen_size->singleStep();
 		_ui->spinbox_pen_size->setValue(value);
 		emit(_ui->spinbox_pen_size->valueChanged(value));
 		setSizePen(value);
 		repaint();
 	} else if (Qt::ControlModifier == event->modifiers()) {
-		QScrollArea * sc = _ui->scroll_area;
-		sc->verticalScrollBar()->setEnabled(false);
+		_scroll_parent->verticalScrollBar()->setEnabled(false);
 		double value = _ui->spinbox_scale->value() + delta * _ui->spinbox_scale->singleStep();
 		value = std::min<double>(_ui->spinbox_scale->maximum(),value);
 		value = std::max<double>(_ui->spinbox_scale->minimum(), value);
@@ -226,7 +234,7 @@ void ImageCanvas::wheelEvent(QWheelEvent * event) {
 		scaleChanged(value);
 		repaint();
 	} else {
-		_ui->scroll_area->verticalScrollBar()->setEnabled(true);
+        _scroll_parent->verticalScrollBar()->setEnabled(true);
 	}
 }
 

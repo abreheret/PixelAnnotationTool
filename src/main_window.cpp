@@ -40,12 +40,14 @@ MainWindow::MainWindow(QWidget *parent, Qt::WindowFlags flags)
 	menuEdit->addAction(redo_action);
 
 	tabWidget->clear();
-
+    
 	connect(button_watershed      , SIGNAL(released())            , this, SLOT(runWatershed()  ));
 	connect(actionOpen_config_file, SIGNAL(triggered())           , this, SLOT(loadConfigFile()));
 	connect(actionSave_config_file, SIGNAL(triggered())           , this, SLOT(saveConfigFile()));
 	connect(tabWidget             , SIGNAL(tabCloseRequested(int)), this, SLOT(closeTab(int)   ));
 	connect(tabWidget             , SIGNAL(currentChanged(int))   , this, SLOT(updateConnect(int)));
+
+    //disconnect(button_watershed, SIGNAL(released()), this, SLOT(runWatershed()));
 
 	labels = defaulfLabels();
 
@@ -59,6 +61,8 @@ MainWindow::MainWindow(QWidget *parent, Qt::WindowFlags flags)
 }
 
 void MainWindow::closeTab(int index) {
+    ImageCanvas * ic = static_cast<ImageCanvas *>(tabWidget->widget(index));
+    delete ic;
 	tabWidget->removeTab(index);
 }
 
@@ -124,7 +128,6 @@ void MainWindow::changeLabel(QListWidgetItem* current, QListWidgetItem* previous
 void MainWindow::runWatershed() {
 	image_canvas->setWatershedMask(watershed(image_canvas->getImage(), image_canvas->getMask().id));
 	checkbox_watershed_mask->setCheckState(Qt::CheckState::Checked);
-	//checkbox_manuel_mask->setCheckState(Qt::CheckState::Unchecked);
 	image_canvas->update();
 }
 
@@ -141,37 +144,38 @@ void MainWindow::updateConnect() {
 }
 
 ImageCanvas * MainWindow::newImageCanvas() {
-	scroll_area = new QScrollArea;
-	image_canvas = new ImageCanvas(scroll_area, this);
+	//scroll_area = new QScrollArea;
+	image_canvas = new ImageCanvas( this);
 	image_canvas->setSizePolicy(QSizePolicy::Ignored, QSizePolicy::Ignored);
 	image_canvas->setScaledContents(true);
-	scroll_area->setBackgroundRole(QPalette::Dark);
-	scroll_area->setWidget(image_canvas);
 	updateConnect();
 	return image_canvas;
 }
 
 void MainWindow::updateConnect(int index) {
 	image_canvas = static_cast<ImageCanvas *>(tabWidget->widget(index));
-	scroll_area = image_canvas->getScrollParent();
+//	scroll_area = image_canvas->getScrollParent();
 	updateConnect();
 }
 
 ImageCanvas * MainWindow::getImageCanvas(QString name) {
+    //ImageCanvas * image_canvas = NULL;
 	for (int i = 0; i < tabWidget->count(); i++) {
 		if (tabWidget->tabText(i) == name) {
-			image_canvas = static_cast<ImageCanvas *>(tabWidget->widget(i));
+            QScrollArea * scroll_area = static_cast<QScrollArea *>(tabWidget->widget(i));
+            image_canvas = static_cast<ImageCanvas*>(scroll_area->widget());
+            //image_canvas = static_cast<ImageCanvas *>(tabWidget->widget(i));
 			updateConnect();
-			scroll_area = image_canvas->getScrollParent();
 			return image_canvas;
 		}
 	}
 	image_canvas = newImageCanvas();
-	scroll_area = image_canvas->getScrollParent();
+	//scroll_area = image_canvas->getScrollParent();
 	QString iDir = currentDir();
 	QString filepath(iDir + "/" + name);
 	image_canvas->loadImage(filepath);
-	tabWidget->addTab(scroll_area, name);
+	//tabWidget->addTab(scroll_area, name);
+    tabWidget->addTab(image_canvas->getScrollParent(), name);
 	return image_canvas;
 }
 

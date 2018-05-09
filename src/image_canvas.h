@@ -15,7 +15,8 @@ class ImageCanvas : public QLabel {
 
 public:
 
-	ImageCanvas(QScrollArea * scroll_parent, MainWindow *ui);
+	ImageCanvas(MainWindow *ui);
+    ~ImageCanvas();
 
 	void setId(int id);
 	void setMask(const ImageMask & mask);
