@@ -61,7 +61,7 @@ MainWindow::MainWindow(QWidget *parent, Qt::WindowFlags flags)
 }
 
 void MainWindow::closeTab(int index) {
-    ImageCanvas * ic = static_cast<ImageCanvas *>(tabWidget->widget(index));
+    ImageCanvas * ic = getImageCanvas(index);
     delete ic;
 	tabWidget->removeTab(index);
 }
@@ -173,15 +173,20 @@ ImageCanvas * MainWindow::newImageCanvas() {
 
 void MainWindow::updateConnect(int index) {
     allDisconnnect(image_canvas);
-	image_canvas = static_cast<ImageCanvas *>(tabWidget->widget(index));
+    image_canvas = getImageCanvas(index);
 	updateConnect(image_canvas);
+}
+
+ImageCanvas * MainWindow::getImageCanvas(int index) {
+    QScrollArea * scroll_area = static_cast<QScrollArea *>(tabWidget->widget(index));
+    ImageCanvas * ic = static_cast<ImageCanvas*>(scroll_area->widget());
+    return ic;
 }
 
 int MainWindow::getImageCanvas(QString name, ImageCanvas * ic) {
 	for (int i = 0; i < tabWidget->count(); i++) {
 		if (tabWidget->tabText(i) == name) {
-            QScrollArea * scroll_area = static_cast<QScrollArea *>(tabWidget->widget(i));
-            ic = static_cast<ImageCanvas*>(scroll_area->widget());
+            ic = getImageCanvas(i);
 			return i;
 		}
 	}

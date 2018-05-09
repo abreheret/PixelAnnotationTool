@@ -34,7 +34,8 @@ private:
 	void loadConfigLabels();
 	ImageCanvas * newImageCanvas();
 	int getImageCanvas(QString name, ImageCanvas *ic) ;
-	
+    ImageCanvas * getImageCanvas(int index);
+
 public:
 	ImageCanvas   *  image_canvas ;
     //std::vector<ImageCanvas*> _image_canvas;
