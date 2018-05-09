@@ -26,15 +26,18 @@ MainWindow::MainWindow(QWidget *parent, Qt::WindowFlags flags)
 	list_label->setSpacing(1);
     image_canvas = NULL;
 	save_action = new QAction(tr("&Save current image"), this);
+    close_tab_action = new QAction(tr("&Close current tab"), this);
 	undo_action = new QAction(tr("&Undo"), this);
 	redo_action = new QAction(tr("&Redo"), this);
 	undo_action->setShortcuts(QKeySequence::Undo);
 	redo_action->setShortcuts(QKeySequence::Redo);
 	save_action->setShortcut(Qt::CTRL+Qt::Key_S);
+    close_tab_action->setShortcut(Qt::CTRL + Qt::Key_W);
 	undo_action->setEnabled(false);
 	redo_action->setEnabled(false);
 
 	menuFile->addAction(save_action);
+    menuFile->addAction(close_tab_action);
 	menuEdit->addAction(undo_action);
 	menuEdit->addAction(redo_action);
 
@@ -43,16 +46,21 @@ MainWindow::MainWindow(QWidget *parent, Qt::WindowFlags flags)
 	connect(button_watershed      , SIGNAL(released())                        , this, SLOT(runWatershed()  ));
 	connect(actionOpen_config_file, SIGNAL(triggered())                       , this, SLOT(loadConfigFile()));
 	connect(actionSave_config_file, SIGNAL(triggered())                       , this, SLOT(saveConfigFile()));
+    connect(close_tab_action      , SIGNAL(triggered())                       , this, SLOT(closeCurrentTab()));
 	connect(tabWidget             , SIGNAL(tabCloseRequested(int))            , this, SLOT(closeTab(int)   ));
 	connect(tabWidget             , SIGNAL(currentChanged(int))               , this, SLOT(updateConnect(int)));
     connect(tree_widget_img       , SIGNAL(itemClicked(QTreeWidgetItem *,int)), this, SLOT(treeWidgetClicked()));
-
+    
 	labels = defaulfLabels();
 
 	loadConfigLabels();
 
 	connect(list_label, SIGNAL(currentItemChanged(QListWidgetItem*, QListWidgetItem*)), this, SLOT(changeLabel(QListWidgetItem*, QListWidgetItem*)));
 	connect(list_label, SIGNAL(itemDoubleClicked(QListWidgetItem*)), this, SLOT(changeColor(QListWidgetItem*)));
+}
+
+void MainWindow::closeCurrentTab() {
+    closeTab(tabWidget->currentIndex());
 }
 
 void MainWindow::closeTab(int index) {

@@ -44,6 +44,7 @@ public:
 	Name2Labels      labels       ;
 	Id2Labels        id_labels    ;
 	QAction        * save_action  ;
+    QAction        * close_tab_action;
 	QAction        * undo_action  ;
 	QAction        * redo_action  ;
 	QString          curr_open_dir;
@@ -67,6 +68,7 @@ public slots:
 	//void on_actionOpen_jsq_triggered();
 	void on_actionAbout_triggered();
 	void closeTab(int index);
+    void closeCurrentTab();
 	void updateConnect(int index);
     void treeWidgetClicked();
 };
