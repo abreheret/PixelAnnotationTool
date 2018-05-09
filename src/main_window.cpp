@@ -25,7 +25,7 @@ MainWindow::MainWindow(QWidget *parent, Qt::WindowFlags flags)
 	setupUi(this);
 	setWindowTitle(QApplication::translate("MainWindow", "PixelAnnotationTool " PIXEL_ANNOTATION_TOOL_GIT_TAG, Q_NULLPTR));
 	list_label->setSpacing(1);
-
+    image_canvas = NULL;
 	save_action = new QAction(tr("&Save current image"), this);
 	undo_action = new QAction(tr("&Undo"), this);
 	redo_action = new QAction(tr("&Redo"), this);
@@ -125,58 +125,73 @@ void MainWindow::changeLabel(QListWidgetItem* current, QListWidgetItem* previous
 	image_canvas->setId(labels[key].id);
 }
 
-void MainWindow::runWatershed() {
-	image_canvas->setWatershedMask(watershed(image_canvas->getImage(), image_canvas->getMask().id));
+void MainWindow::runWatershed(ImageCanvas * ic) {
+	ic->setWatershedMask(watershed(ic->getImage(), ic->getMask().id));
 	checkbox_watershed_mask->setCheckState(Qt::CheckState::Checked);
-	image_canvas->update();
+	ic->update();
 }
 
-void MainWindow::updateConnect() {
-	connect(spinbox_scale, SIGNAL(valueChanged(double)), image_canvas, SLOT(scaleChanged(double)));
-	connect(spinbox_alpha, SIGNAL(valueChanged(double)), image_canvas, SLOT(alphaChanged(double)));
-	connect(spinbox_pen_size, SIGNAL(valueChanged(int)), image_canvas, SLOT(setSizePen(int)));
-	connect(checkbox_watershed_mask, SIGNAL(clicked()), image_canvas, SLOT(update()));
-	connect(checkbox_manuel_mask, SIGNAL(clicked()), image_canvas, SLOT(update()));
-	connect(actionClear, SIGNAL(triggered()), image_canvas, SLOT(clearMask()));
-	connect(undo_action, SIGNAL(triggered()), image_canvas, SLOT(undo()));
-	connect(redo_action, SIGNAL(triggered()), image_canvas, SLOT(redo()));
-	connect(save_action, SIGNAL(triggered()), image_canvas, SLOT(saveMask()));
+void MainWindow::runWatershed() {
+    ImageCanvas * ic = image_canvas;
+    if( ic != NULL)
+        runWatershed(ic);
+}
+
+void MainWindow::updateConnect(const ImageCanvas * ic) {
+    if (ic == NULL) return;
+    connect(spinbox_scale, SIGNAL(valueChanged(double)), ic, SLOT(scaleChanged(double)));
+    connect(spinbox_alpha, SIGNAL(valueChanged(double)), ic, SLOT(alphaChanged(double)));
+    connect(spinbox_pen_size, SIGNAL(valueChanged(int)), ic, SLOT(setSizePen(int)));
+	connect(checkbox_watershed_mask, SIGNAL(clicked()), ic, SLOT(update()));
+	connect(checkbox_manuel_mask, SIGNAL(clicked()), ic, SLOT(update()));
+	connect(actionClear, SIGNAL(triggered()), ic, SLOT(clearMask()));
+	connect(undo_action, SIGNAL(triggered()), ic, SLOT(undo()));
+	connect(redo_action, SIGNAL(triggered()), ic, SLOT(redo()));
+	connect(save_action, SIGNAL(triggered()), ic, SLOT(saveMask()));
+}
+
+void MainWindow::allDisconnnect(const ImageCanvas * ic) {
+    if (ic == NULL) return;
+    disconnect(spinbox_scale, SIGNAL(valueChanged(double)), ic, SLOT(scaleChanged(double)));
+    disconnect(spinbox_alpha, SIGNAL(valueChanged(double)), ic, SLOT(alphaChanged(double)));
+    disconnect(spinbox_pen_size, SIGNAL(valueChanged(int)), ic, SLOT(setSizePen(int)));
+    disconnect(checkbox_watershed_mask, SIGNAL(clicked()), ic, SLOT(update()));
+    disconnect(checkbox_manuel_mask, SIGNAL(clicked()), ic, SLOT(update()));
+    disconnect(actionClear, SIGNAL(triggered()), ic, SLOT(clearMask()));
+    disconnect(undo_action, SIGNAL(triggered()), ic, SLOT(undo()));
+    disconnect(redo_action, SIGNAL(triggered()), ic, SLOT(redo()));
+    disconnect(save_action, SIGNAL(triggered()), ic, SLOT(saveMask()));
 }
 
 ImageCanvas * MainWindow::newImageCanvas() {
-	//scroll_area = new QScrollArea;
-	image_canvas = new ImageCanvas( this);
-	image_canvas->setSizePolicy(QSizePolicy::Ignored, QSizePolicy::Ignored);
-	image_canvas->setScaledContents(true);
-	updateConnect();
-	return image_canvas;
+    ImageCanvas * ic = new ImageCanvas( this);
+	ic->setSizePolicy(QSizePolicy::Ignored, QSizePolicy::Ignored);
+	ic->setScaledContents(true);
+	updateConnect(ic);
+	return ic;
 }
 
 void MainWindow::updateConnect(int index) {
+    allDisconnnect(image_canvas);
 	image_canvas = static_cast<ImageCanvas *>(tabWidget->widget(index));
-//	scroll_area = image_canvas->getScrollParent();
-	updateConnect();
+	updateConnect(image_canvas);
 }
 
-ImageCanvas * MainWindow::getImageCanvas(QString name) {
-    //ImageCanvas * image_canvas = NULL;
+int MainWindow::getImageCanvas(QString name, ImageCanvas * ic) {
 	for (int i = 0; i < tabWidget->count(); i++) {
 		if (tabWidget->tabText(i) == name) {
             QScrollArea * scroll_area = static_cast<QScrollArea *>(tabWidget->widget(i));
-            image_canvas = static_cast<ImageCanvas*>(scroll_area->widget());
-            //image_canvas = static_cast<ImageCanvas *>(tabWidget->widget(i));
-			updateConnect();
-			return image_canvas;
+            ic = static_cast<ImageCanvas*>(scroll_area->widget());
+			return i;
 		}
 	}
-	image_canvas = newImageCanvas();
-	//scroll_area = image_canvas->getScrollParent();
+	ic = newImageCanvas();
 	QString iDir = currentDir();
 	QString filepath(iDir + "/" + name);
-	image_canvas->loadImage(filepath);
-	//tabWidget->addTab(scroll_area, name);
-    tabWidget->addTab(image_canvas->getScrollParent(), name);
-	return image_canvas;
+	ic->loadImage(filepath);
+    int index = tabWidget->addTab(ic->getScrollParent(), name);
+    
+	return index;
 }
 
 QString MainWindow::currentDir() const {
@@ -200,8 +215,10 @@ void MainWindow::on_tree_widget_img_currentItemChanged(QTreeWidgetItem *current,
 	QString iDir = currentDir();
 	if (iFile.isEmpty() || iDir.isEmpty())
 		return;
-
-	image_canvas = getImageCanvas(iFile);
+    allDisconnnect(image_canvas);
+	int index = getImageCanvas(iFile, image_canvas);
+    updateConnect(image_canvas);
+    tabWidget->setCurrentIndex(index);
 }
 
 void MainWindow::on_actionOpenDir_triggered() {

@@ -33,7 +33,7 @@ private:
 	
 	void loadConfigLabels();
 	ImageCanvas * newImageCanvas();
-	ImageCanvas * getImageCanvas(QString name) ;
+	int getImageCanvas(QString name, ImageCanvas *ic) ;
 	
 public:
 	ImageCanvas   *  image_canvas ;
@@ -49,7 +49,9 @@ public:
 public:
 	QString currentDir() const;
 	QString currentFile() const;
-	void updateConnect();
+	void updateConnect(const ImageCanvas * ic);
+    void allDisconnnect(const ImageCanvas * ic);
+    void runWatershed(ImageCanvas * ic);
     	
 
 public slots:

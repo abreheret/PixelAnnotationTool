@@ -62,7 +62,7 @@ void ImageCanvas::loadImage(const QString &filename) {
 	_undo_index = 0;
 	if (QFile(_mask_file).exists()) {
 		_mask = ImageMask(_mask_file,_ui->id_labels);
-		emit(_ui->button_watershed->released());
+        _ui->runWatershed(this);// button_watershed->released());
 		_ui->checkbox_manuel_mask->setChecked(true);
 		_undo_list.push_back(_mask);
 		_undo_index++;
