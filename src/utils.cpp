@@ -161,7 +161,7 @@ QImage removeBorder(const QImage & mask_id, const Id2Labels & labels, cv::Size w
 bool isFullZero(const QImage& image) {
 	for (int y = 0; y < image.height(); y++) {
 		const uchar * line = image.scanLine(y);
-		for (int x = 0; x < image.width(); x++) {
+		for (int x = 0; x < image.bytesPerLine(); x++) {
 			if (line[x] > 0)
 				return false;
 		}
