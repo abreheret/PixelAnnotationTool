@@ -57,7 +57,7 @@ find_package(OpenCV REQUIRED)
 include_directories(${CMAKE_CURRENT_BINARY_DIR} ${OpenCV_INCLUDE_DIRS})
 
 qt5_wrap_ui(UI_TEST_HDRS src/main_window.ui )
-add_executable(PixelAnnotationTool 
+add_executable(PixelAnnotationTool MACOSX_BUNDLE WIN32
 	src/main_window.cpp
 	src/main_window.h
 	src/about_dialog.cpp
@@ -102,7 +102,7 @@ endif()
 
 file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/default.png DESTINATION ${DIR_NAME_RELEASE}/ )
 
-if( MSVC )
+if( MSVC )  # ---------------------------- WINDOWS --------------------------------------------------------------------
     set(DLLs_DEP_RELEASE "${QT5_DIR}/../../bin/Qt5Widgets.dll"
                          "${QT5_DIR}/../../bin/Qt5Gui.dll"
                          "${QT5_DIR}/../../bin/Qt5Core.dll")
@@ -127,36 +127,53 @@ if( MSVC )
 		COMMAND curl --upload-file "${NAME_RELEASE}.zip" https://transfer.sh/${NAME_RELEASE}.zip 
 		DEPENDS make_zip)
 	endif()
-elseif(UNIX)
-	add_custom_target(copy_pat 
-		COMMAND echo "=== copy_pat ==="
-	    COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:PixelAnnotationTool> ${DIR_NAME_RELEASE}/PixelAnnotationTool 
-		DEPENDS PixelAnnotationTool)
-	add_custom_target(extract_appimage 
-		COMMAND echo "=== extract_appimage ==="
-		COMMAND chmod +x ${CMAKE_CURRENT_SOURCE_DIR}/scripts_to_build/linuxdeployqt-continuous-x86_64.AppImage
-	    COMMAND ${CMAKE_CURRENT_SOURCE_DIR}/scripts_to_build/linuxdeployqt-continuous-x86_64.AppImage --appimage-extract 
-		DEPENDS copy_pat)
-	
-	find_program(QMAKE_APP qmake PATHS /opt/qt59/bin/ ${QT5_DIR}/../../bin)
+elseif(APPLE) # ---------------------------- APPLE --------------------------------------------------------------------
+	find_program(QMAKE_APP qmake PATHS /opt/qt59/bin/ ${QT5_DIR}/../../bin ${QMAKE_PATH})
 	if( QMAKE_APP-NOTFOUND )
 		message(STATUS "qmake is not found")
 	else()
 		message(STATUS "qmake is found here : ${QMAKE_APP}")
-		add_custom_target(linux_deploy_qt 
-			COMMAND echo "=== ${CMAKE_BINARY_DIR}/squashfs-root/usr/bin/linuxdeployqt ${DIR_NAME_RELEASE}/PixelAnnotationTool -appimage -qmake=${QMAKE_APP} ==="
-			COMMAND ${CMAKE_BINARY_DIR}/squashfs-root/usr/bin/linuxdeployqt ${DIR_NAME_RELEASE}/PixelAnnotationTool -appimage -qmake=${QMAKE_APP} 
-			DEPENDS extract_appimage)
+        add_custom_target(deploy_qt 
+        COMMAND echo "---------------------------------"
+        COMMAND echo "${QMAKE_PATH}/macdeployqt ${DIR_NAME_RELEASE}/PixelAnnotationTool.app -dmg"
+        COMMAND ${QMAKE_PATH}/macdeployqt ${DIR_NAME_RELEASE}/PixelAnnotationTool.app -dmg 
+        DEPENDS PixelAnnotationTool )
+		if( NOT CURL-NOTFOUND )
+			add_custom_target(upload_file
+			  COMMAND curl --upload-file ${DIR_NAME_RELEASE}/PixelAnnotationTool.dmg https://transfer.sh/PixelAnnotationTool_x86_64_${GIT_TAG}.dmg 
+			  DEPENDS deploy_qt)
+		endif()			
+	endif()
+else ()  # ---------------------------- LINUX --------------------------------------------------------------------
+	add_custom_target(copy_pat 
+		COMMAND echo "=== copy_pat ==="
+	    COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:PixelAnnotationTool> ${DIR_NAME_RELEASE}/PixelAnnotationTool 
+		DEPENDS PixelAnnotationTool)
+    add_custom_target(extract_appimage 
+        COMMAND echo "=== extract_appimage ==="
+        COMMAND chmod +x ${CMAKE_CURRENT_SOURCE_DIR}/scripts_to_build/linuxdeployqt-continuous-x86_64.AppImage
+        COMMAND ${CMAKE_CURRENT_SOURCE_DIR}/scripts_to_build/linuxdeployqt-continuous-x86_64.AppImage --appimage-extract 
+        DEPENDS copy_pat)
+	
+	find_program(QMAKE_APP qmake PATHS /opt/qt59/bin/ ${QT5_DIR}/../../bin ${QMAKE_PATH})
+	if( QMAKE_APP-NOTFOUND )
+		message(STATUS "qmake is not found")
+	else()
+		message(STATUS "qmake is found here : ${QMAKE_APP}")
+        add_custom_target(deploy_qt 
+        COMMAND echo "=== ${CMAKE_BINARY_DIR}/squashfs-root/usr/bin/linuxdeployqt ${DIR_NAME_RELEASE}/PixelAnnotationTool -appimage -qmake=${QMAKE_APP} ==="
+        COMMAND ${CMAKE_BINARY_DIR}/squashfs-root/usr/bin/linuxdeployqt ${DIR_NAME_RELEASE}/PixelAnnotationTool -appimage -qmake=${QMAKE_APP} 
+        DEPENDS extract_appimage)
 		add_custom_target(make_zip 
 			COMMAND echo "=== make_zip ==="
 			COMMAND ${CMAKE_COMMAND} -E rename Application-x86_64.AppImage PixelAnnotationTool_x86_64_${GIT_TAG}.AppImage
-			DEPENDS linux_deploy_qt)		
+			DEPENDS deploy_qt)		
 		if( NOT CURL-NOTFOUND )
 			add_custom_target(upload_file
 			  COMMAND curl --upload-file PixelAnnotationTool_x86_64_${GIT_TAG}.AppImage https://transfer.sh/PixelAnnotationTool_x86_64_${GIT_TAG}.AppImage 
 			  DEPENDS make_zip)
 		endif()			
-	endif()
+	endif()    
 endif()
 
 

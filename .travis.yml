@@ -1,33 +1,41 @@
 language: cpp
-sudo: required
-dist: trusty
 branches:
   only:
     - master
+    - dev
 os:
-  - linux
+    - linux
+    - osx
 
 env:
-  - CONFIG=Release
+    - CONFIG=Release
   
 branches:
   only:
-  - master
-  - dev
-
+    - master
+    - dev
 before_install:
-    - QT_VERSION_MM=59
-    - QT_VERSION_FULL=591-trusty
-    - sudo apt-add-repository --yes ppa:beineri/opt-qt$QT_VERSION_FULL && sudo apt-get update -qq && sudo apt-get install -qq qt${QT_VERSION_MM}base qt${QT_VERSION_MM}script qt${QT_VERSION_MM}tools && export CMAKE_PREFIX_PATH=/opt/qt${QT_VERSION_MM}
-    - sudo apt-get install libopencv-dev
-    - sudo apt-get install curl
-    
+    - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then
+        brew update;
+        brew install qt;
+        brew install opencv;
+        brew install curl;
+      else
+        QT_VERSION_MM=59;
+        QT_VERSION_FULL=591-trusty;
+        sudo apt-add-repository --yes ppa:beineri/opt-qt$QT_VERSION_FULL && sudo apt-get update -qq && sudo apt-get install -qq qt${QT_VERSION_MM}base qt${QT_VERSION_MM}script qt${QT_VERSION_MM}tools && export CMAKE_PREFIX_PATH=/opt/qt${QT_VERSION_MM};
+        sudo apt-get install libopencv-dev;
+        sudo apt-get install curl;
+      fi
 before_script:
    - mkdir build
    - cd build
-   - cmake .. -DCMAKE_BUILD_TYPE=$CONFIG -DDISABLE_MAINTAINER_CFLAGS=off
+   - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then
+        cmake .. -DCMAKE_BUILD_TYPE=$CONFIG -DDISABLE_MAINTAINER_CFLAGS=off -DCMAKE_PREFIX_PATH=$(brew --prefix qt) -DQMAKE_PATH=$(brew --prefix qt)/bin;
+     else
+        cmake .. -DCMAKE_BUILD_TYPE=$CONFIG -DDISABLE_MAINTAINER_CFLAGS=off;
+     fi
 
 script:
    - cmake --build . --config $CONFIG
-   - cmake --build . --config $CONFIG --target upload_file    
-
+   - cmake --build . --config $CONFIG --target upload_file

@@ -2,7 +2,7 @@ PixelAnnotationTool
 ============================
 
 -----------------
-| **`  Linux  `** | **` Windows `** | **` Donate  `** | 
+| **` Linux/MAC `** | **` Windows `** | **` Donate  `** | 
 |-----------------|---------------------|---------------------|
 | [![Build Status](https://api.travis-ci.org/abreheret/PixelAnnotationTool.svg?branch=master)](https://travis-ci.org/abreheret/PixelAnnotationTool) | [![Appveyor Build Status](https://img.shields.io/appveyor/ci/abreheret/pixelannotationtool.svg)](https://ci.appveyor.com/project/abreheret/pixelannotationtool) |  [![Donate](https://img.shields.io/badge/Donate-PayPal-green.svg)](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=8K79VKWBS7352) |
 
