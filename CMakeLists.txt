@@ -124,6 +124,7 @@ if( MSVC )  # ---------------------------- WINDOWS -----------------------------
 		DEPENDS PixelAnnotationTool)
 	if( NOT CURL-NOTFOUND )
 		add_custom_target(upload_file
+        COMMAND echo "=== upload_file ==="
 		COMMAND curl --upload-file "${NAME_RELEASE}.zip" https://transfer.sh/${NAME_RELEASE}.zip 
 		DEPENDS make_zip)
 	endif()
@@ -134,12 +135,12 @@ elseif(APPLE) # ---------------------------- APPLE -----------------------------
 	else()
 		message(STATUS "qmake is found here : ${QMAKE_APP}")
         add_custom_target(deploy_qt 
-        COMMAND echo "---------------------------------"
-        COMMAND echo "${QMAKE_PATH}/macdeployqt ${DIR_NAME_RELEASE}/PixelAnnotationTool.app -dmg"
+        COMMAND echo "=== macdeployqt ==="
         COMMAND ${QMAKE_PATH}/macdeployqt ${DIR_NAME_RELEASE}/PixelAnnotationTool.app -dmg 
         DEPENDS PixelAnnotationTool )
 		if( NOT CURL-NOTFOUND )
 			add_custom_target(upload_file
+              COMMAND echo "=== upload_file ==="
 			  COMMAND curl --upload-file ${DIR_NAME_RELEASE}/PixelAnnotationTool.dmg https://transfer.sh/PixelAnnotationTool_x86_64_${GIT_TAG}.dmg 
 			  DEPENDS deploy_qt)
 		endif()			
@@ -161,7 +162,7 @@ else ()  # ---------------------------- LINUX ----------------------------------
 	else()
 		message(STATUS "qmake is found here : ${QMAKE_APP}")
         add_custom_target(deploy_qt 
-        COMMAND echo "=== ${CMAKE_BINARY_DIR}/squashfs-root/usr/bin/linuxdeployqt ${DIR_NAME_RELEASE}/PixelAnnotationTool -appimage -qmake=${QMAKE_APP} ==="
+        COMMAND echo "=== linuxdeployqt ==="
         COMMAND ${CMAKE_BINARY_DIR}/squashfs-root/usr/bin/linuxdeployqt ${DIR_NAME_RELEASE}/PixelAnnotationTool -appimage -qmake=${QMAKE_APP} 
         DEPENDS extract_appimage)
 		add_custom_target(make_zip 
@@ -170,6 +171,7 @@ else ()  # ---------------------------- LINUX ----------------------------------
 			DEPENDS deploy_qt)		
 		if( NOT CURL-NOTFOUND )
 			add_custom_target(upload_file
+              COMMAND echo "=== upload_file ==="
 			  COMMAND curl --upload-file PixelAnnotationTool_x86_64_${GIT_TAG}.AppImage https://transfer.sh/PixelAnnotationTool_x86_64_${GIT_TAG}.AppImage 
 			  DEPENDS make_zip)
 		endif()			
