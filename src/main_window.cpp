@@ -57,11 +57,13 @@ MainWindow::MainWindow(QWidget *parent, Qt::WindowFlags flags)
 
 	connect(list_label, SIGNAL(currentItemChanged(QListWidgetItem*, QListWidgetItem*)), this, SLOT(changeLabel(QListWidgetItem*, QListWidgetItem*)));
 	connect(list_label, SIGNAL(itemDoubleClicked(QListWidgetItem*)), this, SLOT(changeColor(QListWidgetItem*)));
+
+    list_label->setEnabled(false);
 }
 
 void MainWindow::closeCurrentTab() {
     int index = tabWidget->currentIndex();
-    if(index>=0)
+    if (index >= 0)
         closeTab(index);
 }
 
@@ -77,11 +79,13 @@ void MainWindow::closeTab(int index) {
             ic->saveMask();
         }
     }
-
     tabWidget->removeTab(index);
     delete ic;
     if (tabWidget->count() == 0 ) {
         image_canvas = NULL;
+        list_label->setEnabled(false);
+    } else {
+        image_canvas = getImageCanvas(std::min(index, tabWidget->count()-1));
     }
 }
 
@@ -213,6 +217,10 @@ void MainWindow::updateConnect(int index) {
         return;
     allDisconnnect(image_canvas);
     image_canvas = getImageCanvas(index);
+    if(image_canvas!= NULL)
+        list_label->setEnabled(true);
+    else 
+        list_label->setEnabled(false);
 	updateConnect(image_canvas);
 }
 
