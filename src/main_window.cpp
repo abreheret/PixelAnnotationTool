@@ -26,12 +26,20 @@ MainWindow::MainWindow(QWidget *parent, Qt::WindowFlags flags)
 	list_label->setSpacing(1);
     image_canvas = NULL;
 	save_action = new QAction(tr("&Save current image"), this);
+    copy_mask_action = new QAction(tr("&Copy Mask"), this);
+    paste_mask_action = new QAction(tr("&Paste Mask"), this);
+    clear_mask_action = new QAction(tr("&Clear Mask mask"), this);
     close_tab_action = new QAction(tr("&Close current tab"), this);
+    swap_action = new QAction(tr("&Swap check box Watershed"), this);
 	undo_action = new QAction(tr("&Undo"), this);
 	redo_action = new QAction(tr("&Redo"), this);
 	undo_action->setShortcuts(QKeySequence::Undo);
 	redo_action->setShortcuts(QKeySequence::Redo);
 	save_action->setShortcut(Qt::CTRL+Qt::Key_S);
+    swap_action->setShortcut(Qt::CTRL + Qt::Key_Space);
+    copy_mask_action->setShortcut(Qt::CTRL + Qt::Key_C);
+    paste_mask_action->setShortcut(Qt::CTRL + Qt::Key_V);
+    clear_mask_action->setShortcut(Qt::CTRL + Qt::Key_R);
     close_tab_action->setShortcut(Qt::CTRL + Qt::Key_W);
 	undo_action->setEnabled(false);
 	redo_action->setEnabled(false);
@@ -40,13 +48,21 @@ MainWindow::MainWindow(QWidget *parent, Qt::WindowFlags flags)
     menuEdit->addAction(close_tab_action);
 	menuEdit->addAction(undo_action);
 	menuEdit->addAction(redo_action);
+    menuEdit->addAction(copy_mask_action);
+    menuEdit->addAction(paste_mask_action);
+    menuEdit->addAction(clear_mask_action);
+    menuEdit->addAction(swap_action);
 
 	tabWidget->clear();
     
 	connect(button_watershed      , SIGNAL(released())                        , this, SLOT(runWatershed()  ));
+    connect(swap_action           , SIGNAL(triggered())                       , this, SLOT(swapView()      ));
 	connect(actionOpen_config_file, SIGNAL(triggered())                       , this, SLOT(loadConfigFile()));
 	connect(actionSave_config_file, SIGNAL(triggered())                       , this, SLOT(saveConfigFile()));
     connect(close_tab_action      , SIGNAL(triggered())                       , this, SLOT(closeCurrentTab()));
+    connect(copy_mask_action      , SIGNAL(triggered())                       , this, SLOT(copyMask()));
+    connect(paste_mask_action     , SIGNAL(triggered())                       , this, SLOT(pasteMask()));
+    connect(clear_mask_action     , SIGNAL(triggered())                       , this, SLOT(clearMask()));
 	connect(tabWidget             , SIGNAL(tabCloseRequested(int))            , this, SLOT(closeTab(int)   ));
 	connect(tabWidget             , SIGNAL(currentChanged(int))               , this, SLOT(updateConnect(int)));
     connect(tree_widget_img       , SIGNAL(itemClicked(QTreeWidgetItem *,int)), this, SLOT(treeWidgetClicked()));
@@ -358,3 +374,46 @@ void MainWindow::on_actionAbout_triggered() {
 	d->setModal(true);
 	d->show();
 }
+
+void MainWindow::copyMask() {
+    ImageCanvas * ic = getCurrentImageCanvas();
+    if (ic == NULL)
+        return;
+
+    _tmp = ic->getMask();
+
+}
+
+void MainWindow::pasteMask() {
+    ImageCanvas * ic = getCurrentImageCanvas();
+    if (ic == NULL)
+        return;
+
+    ic->setActionMask(_tmp);
+}
+
+void MainWindow::clearMask() {
+    ImageCanvas * ic = getCurrentImageCanvas();
+    if (ic == NULL)
+        return;
+
+    ImageMask clear(QSize(ic->width(),ic->height()));
+    ic->setActionMask(clear);
+}
+
+ImageCanvas * MainWindow::getCurrentImageCanvas() {
+    int index = tabWidget->currentIndex();
+    if (index == -1)
+        return NULL;
+    ImageCanvas * ic = getImageCanvas(index);
+    return ic;
+    
+}
+
+void MainWindow::swapView() {
+    checkbox_watershed_mask->setCheckState(checkbox_watershed_mask->checkState() == Qt::CheckState::Checked ? Qt::CheckState::Unchecked : Qt::CheckState::Checked);
+    ImageCanvas * ic = getCurrentImageCanvas();
+    if (ic == NULL)return;
+    ic->update();
+}
+

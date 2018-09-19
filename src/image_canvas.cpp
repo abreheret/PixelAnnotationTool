@@ -260,6 +260,14 @@ void ImageCanvas::setMask(const ImageMask & mask) {
 	_mask = mask;
 }
 
+void ImageCanvas::setActionMask(const ImageMask & mask) {
+    setMask(mask);
+    _undo_list.push_back(_mask);
+    _undo_index++;
+    _ui->setStarAtNameOfTab(true);
+    _ui->undo_action->setEnabled(true);
+}
+
 void ImageCanvas::setId(int id) {
 	_color.id = QColor(id, id, id);
 	_color.color = _ui->id_labels[id]->color;

@@ -20,9 +20,10 @@ public:
 
 	void setId(int id);
 	void setMask(const ImageMask & mask);
+    void setActionMask(const ImageMask & mask);
+    ImageMask getMask() const { return _mask; }
+    QImage getImage() const { return _image; }
 
-	ImageMask getMask() const { return _mask; }
-	QImage getImage() const { return _image; }
 
 	void setWatershedMask(QImage watershed);
 	void refresh();
