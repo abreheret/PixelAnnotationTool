@@ -41,3 +41,17 @@ void ImageMask::drawPixel(int x, int y, ColorMask cm) {
 void ImageMask::updateColor(const Id2Labels & labels) {
 	idToColor(id, labels, &color);
 }
+
+void ImageMask::exchangeLabel(int x, int y, const Id2Labels& id_labels, ColorMask cm) {
+
+	QColor current_id = id.pixelColor(QPoint(x, y));
+	if (current_id.red() == 0 || current_id.green() == 0 || current_id.blue() == 0)
+		return;
+
+	cv::Mat id_mat = qImage2Mat(id);
+	cv::floodFill(id_mat, cv::Point(x, y), cv::Scalar(cm.id.red(), cm.id.green(), cm.id.blue()), 0, cv::Scalar(0, 0, 0), cv::Scalar(0, 0, 0));
+
+	id = mat2QImage(id_mat);
+	color = idToColor(id, id_labels);
+
+}

@@ -190,6 +190,22 @@ void ImageCanvas::mouseReleaseEvent(QMouseEvent * e) {
 
 		refresh();
 	}
+
+	if (e->button() == Qt::MiddleButton)
+	{
+		int x, y;
+		if (_pen_size > 0) {
+			x = e->x() / _scale;
+			y = e->y() / _scale;
+		}
+		else {
+			x = (e->x() + 0.5) / _scale;
+			y = (e->y() + 0.5) / _scale;
+		}
+
+		_mask.exchangeLabel(x, y, _ui->id_labels, _color);
+		update();
+	}
 }
 
 void ImageCanvas::mousePressEvent(QMouseEvent * e) {
