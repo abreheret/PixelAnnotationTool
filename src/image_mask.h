@@ -20,6 +20,7 @@ struct ImageMask {
 	void drawFillCircle(int x, int y, int pen_size, ColorMask cm);
 	void drawPixel(int x, int y, ColorMask cm);
 	void updateColor(const Id2Labels & labels);
+	void exchangeLabel(int x, int y, const Id2Labels & id_labels, ColorMask cm);
 };
 
 #endif
