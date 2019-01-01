@@ -52,7 +52,12 @@ find_path(Qt5Gui_DIR Qt5GuiConfig.cmake         PATHS "${QT5_DIR}/Qt5Gui"     )
 	
 find_package(Qt5Widgets REQUIRED)
 find_package(Qt5Gui REQUIRED)
-find_package(OpenCV 3.4.5 REQUIRED)
+find_package(OpenCV REQUIRED)
+
+if(OpenCV_VERSION VERSION_GREATER 4.0 OR OpenCV_VERSION VERSION_EQUAL 4.0) 
+	message(FATAL_ERROR "OpenCV 4.* has breaking changes... Please use OpenCV >= 2.4 and < 4.0")
+endif()
+
 
 include_directories(${CMAKE_CURRENT_BINARY_DIR} ${OpenCV_INCLUDE_DIRS})
 
