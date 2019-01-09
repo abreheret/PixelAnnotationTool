@@ -1,6 +1,14 @@
 import cv2 as cv
 import numpy as np
 import json
+import os
+import argparse
+
+parser = argparse.ArgumentParser()
+parser.add_argument('--epsilon', type=float, default=2.5, help='epsilon pixel to approximate the polygons')
+parser.add_argument('--input', type=str, default="images_test/Abbey_Road_watershed_mask.png", help='image mask input to compute all polygons')
+parser.add_argument('--config', type=str, default="config.json", help='config file content labels informations')
+opt = parser.parse_args()
 
 def to_categorical(y, num_classes=None):
     y = np.array(y, dtype='int').ravel()
@@ -11,9 +19,9 @@ def to_categorical(y, num_classes=None):
     categorical[np.arange(n), y] = 1
     return categorical
     
-img = cv.imread("images_test/Abbey_Road_watershed_mask.png")
+img = cv.imread(opt.input)
 gray = cv.cvtColor(img, cv.COLOR_BGR2GRAY)
-config = json.load(open("config.json"))['labels']
+config = json.load(open(opt.config))['labels']
 
 shape = (gray.shape[0],gray.shape[1],1)
 gray = gray.reshape(shape)
@@ -26,7 +34,7 @@ data["flags"] = {}
 data["shapes"] = []
 data["lineColor"]= [0,255,0,128]
 data["fillColor"]= [255,0,0,128]
-data["imagePath"]= "Abbey_Road.jpg"
+data["imagePath"]= os.path.basename(opt.input).replace("_watershed_mask.png",".jpg")
 data["imageData"]= None
 data["imageHeight"] = img.shape[0]
 data["imageWidth"] = img.shape[1]
@@ -39,11 +47,11 @@ for label in config :
     im, contour , hierarchy = cv.findContours(person, cv.RETR_EXTERNAL, cv.CHAIN_APPROX_SIMPLE)
 
     for i,c in enumerate(contour) :
-        contour[i] = cv.approxPolyDP(c,1.5,True)
+        contour[i] = cv.approxPolyDP(c,opt.epsilon,True)
         d = {}
         d['label'] = label
         d["line_color"] = None
-        d["fill_color"] = None
+        d["fill_color"] = config[label]['color']
         if contour[i].shape[0] < 3:
             continue
         d["points"] = contour[i].reshape(contour[i].shape[0],contour[i].shape[2]).tolist()
