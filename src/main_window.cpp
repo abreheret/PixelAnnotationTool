@@ -165,7 +165,11 @@ void MainWindow::changeLabel(QListWidgetItem* current, QListWidgetItem* previous
 }
 
 void MainWindow::runWatershed(ImageCanvas * ic) {
-	ic->setWatershedMask(watershed(ic->getImage(), ic->getMask().id));
+    QImage iwatershed = watershed(ic->getImage(), ic->getMask().id);
+    if (!checkbox_border_ws->isChecked()) {
+        iwatershed = removeBorder(iwatershed, id_labels);
+    }
+	ic->setWatershedMask(iwatershed);
 	checkbox_watershed_mask->setCheckState(Qt::CheckState::Checked);
 	ic->update();
 }
@@ -202,7 +206,7 @@ void MainWindow::updateConnect(const ImageCanvas * ic) {
 	connect(undo_action, SIGNAL(triggered()), ic, SLOT(undo()));
 	connect(redo_action, SIGNAL(triggered()), ic, SLOT(redo()));
 	connect(save_action, SIGNAL(triggered()), ic, SLOT(saveMask()));
-    connect(checkbox_border_ws, SIGNAL(clicked()), ic, SLOT(update()));
+    connect(checkbox_border_ws, SIGNAL(clicked()), this, SLOT(runWatershed()));
     
 }
 
@@ -217,7 +221,7 @@ void MainWindow::allDisconnnect(const ImageCanvas * ic) {
     disconnect(undo_action, SIGNAL(triggered()), ic, SLOT(undo()));
     disconnect(redo_action, SIGNAL(triggered()), ic, SLOT(redo()));
     disconnect(save_action, SIGNAL(triggered()), ic, SLOT(saveMask()));
-    disconnect(checkbox_border_ws, SIGNAL(clicked()), ic, SLOT(update()));
+    disconnect(checkbox_border_ws, SIGNAL(clicked()), this, SLOT(runWatershed()));
 }
 
 ImageCanvas * MainWindow::newImageCanvas() {

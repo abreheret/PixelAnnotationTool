@@ -37,7 +37,12 @@ void idToColor(const QImage &image_id, const Id2Labels& id_label, QImage *result
 				*pix = label->color.red(); pix++;
 				*pix = label->color.green(); pix++;
 				*pix = label->color.blue();
-			}
+            } else {
+                pix = &line_out[x];
+                pix[0] = 255;
+                pix[1] = 255;
+                pix[2] = 255;
+            }
 		}
 	}
 }
@@ -105,7 +110,7 @@ cv::Mat convertMat32StoRGBC3(const cv::Mat& mat) {
 QImage watershed(const QImage& qimage, const QImage & qmarkers_mask) {
 	cv::Mat image = qImage2Mat(qimage);
 	cv::Mat markers_mask = qImage2Mat(qmarkers_mask);
-	cv::Mat markers(markers_mask.size(), CV_32S);
+	cv::Mat markers = cv::Mat::zeros(markers_mask.size(), CV_32S);
 	for (int y = 0; y < markers_mask.rows; y++) {
 		int* mark = markers.ptr<int>(y);
 		cv::Vec3b* mask = markers_mask.ptr<cv::Vec3b>(y);
