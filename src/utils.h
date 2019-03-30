@@ -13,6 +13,7 @@ QImage idToColor(const QImage &image_id, const Id2Labels& id_label);
 void idToColor(const QImage &image_id, const Id2Labels& id_label, QImage *result);
 inline bool operator<(const QColor & a, const QColor & b) { return a.rgb() < b.rgb(); }
 QColor invColor(const QColor & color);
+QColor readableColor(const QColor & color);
 QVector<QColor> colorMap(int size);
 cv::Mat convertMat32StoRGBC3(const cv::Mat &mat);
 QImage watershed(const QImage& qimage, const QImage & qmarkers_mask);

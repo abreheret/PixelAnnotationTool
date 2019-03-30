@@ -177,7 +177,7 @@ void MainWindow::changeLabel(QListWidgetItem* current, QListWidgetItem* previous
 	label->setSelected(true);
 
 	QString str;
-	QString key = label->text();
+	QString key = label->getName();
 	QTextStream sstr(&str);
 	sstr <<"label=["<< key <<"] id=[" << labels[key].id << "] categorie=[" << labels[key].categorie << "] color=[" << labels[key].color.name() << "]" ;
 	statusBar()->showMessage(str);
