@@ -13,7 +13,11 @@ LabelWidget::LabelWidget(const LabelInfo &label, QWidget *parent , Qt::WindowFla
 
 void LabelWidget::setNewLabel(const LabelInfo &label) {
 	_label = label;
-	setText(label.name);
+	QString text = (label.shortcut) ?
+			label.name + " (" + label.shortcut->key().toString() + ")" :
+			label.name;
+
+	setText(text);
 	setAlignment(Qt::AlignHCenter);
 	setStyleSheet("QLabel { background-color : " + label.color.name() + "; color : " + invColor(_label.color).name() + ";  font: bold 14px; }");
 }
