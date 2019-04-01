@@ -118,7 +118,27 @@ void MainWindow::loadConfigLabels() {
 		item->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEnabled);
 		list_label->addItem(item);
 		list_label->setItemWidget(item, label_widget);
-		labels[it.key()].item = item;
+
+		auto& ref = labels[it.key()];
+		ref.item = item;
+
+		int id = list_label->row(item);
+		const QString shortcut_key = (id < 9)  ? QString("Ctrl+%1").arg(id + 1) :
+                                            (id < 19) ? QString("Alt+%1").arg(id - 10 + 1)  :
+                                            (id < 29) ? QString("Ctrl+Alt+%1").arg(id - 20 + 1) :
+                                            (id < 39) ? QString("Ctrl+Shift+Alt+%1").arg(id - 30 + 1) :
+                                            QString();
+
+		if(id < 39) {
+			QShortcut *shortcut = new QShortcut(QKeySequence(shortcut_key), this);
+			ref.shortcut = shortcut;
+
+			QString text = label.name + " (" + ref.shortcut->key().toString() + ")";
+			label_widget->setText(text);
+
+			connect(shortcut, &QShortcut::activated, this, [=]{onLabelShortcut(id);});
+		}
+
 	}
 	id_labels = getId2Label(labels);
 }
@@ -157,7 +177,7 @@ void MainWindow::changeLabel(QListWidgetItem* current, QListWidgetItem* previous
 	label->setSelected(true);
 
 	QString str;
-	QString key = label->text();
+	QString key = label->getName();
 	QTextStream sstr(&str);
 	sstr <<"label=["<< key <<"] id=[" << labels[key].id << "] categorie=[" << labels[key].categorie << "] color=[" << labels[key].color.name() << "]" ;
 	statusBar()->showMessage(str);
@@ -421,3 +441,7 @@ void MainWindow::swapView() {
     ic->update();
 }
 
+void MainWindow::onLabelShortcut(int row) {
+	if(list_label->isEnabled())
+		list_label->setCurrentRow(row);
+	}

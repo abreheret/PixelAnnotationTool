@@ -81,6 +81,7 @@ public slots:
     void clearMask();
 	void updateConnect(int index);
     void treeWidgetClicked();
+    void onLabelShortcut(int row);
 };
 
 #endif

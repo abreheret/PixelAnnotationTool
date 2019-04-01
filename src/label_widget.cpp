@@ -13,9 +13,13 @@ LabelWidget::LabelWidget(const LabelInfo &label, QWidget *parent , Qt::WindowFla
 
 void LabelWidget::setNewLabel(const LabelInfo &label) {
 	_label = label;
-	setText(label.name);
+	QString text = (label.shortcut) ?
+			label.name + " (" + label.shortcut->key().toString() + ")" :
+			label.name;
+
+	setText(text);
 	setAlignment(Qt::AlignHCenter);
-	setStyleSheet("QLabel { background-color : " + label.color.name() + "; color : " + invColor(_label.color).name() + ";  font: bold 14px; }");
+	setStyleSheet("QLabel { background-color : " + label.color.name() + "; color : " + readableColor(_label.color).name() + ";  font:  14px; }");
 }
 
 void LabelWidget::setSelected(bool s) {
@@ -36,4 +40,8 @@ void LabelWidget::paintEvent(QPaintEvent *event) {
 		p.drawRect(rect());
 		p.end();
 	}
+}
+
+QString LabelWidget::getName(){
+	return this->_label.name;
 }

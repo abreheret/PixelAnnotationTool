@@ -18,6 +18,7 @@ public:
 	
 	void setNewLabel(const LabelInfo &label);
 	void setSelected(bool s);
+	QString getName();
 
 public : // override
 	void paintEvent(QPaintEvent *event) override;

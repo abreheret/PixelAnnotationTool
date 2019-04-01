@@ -47,6 +47,17 @@ void idToColor(const QImage &image_id, const Id2Labels& id_label, QImage *result
 	}
 }
 
+QColor readableColor(const QColor & color)
+{
+	int r, g, b;
+	color.getRgb(&r, &g, &b);
+
+	if ((r*0.299 + g*0.587 + b*0.114) > 150)
+		return QColor(0, 0, 0);
+
+	return QColor(255, 255, 255);
+
+}
 QColor invColor(const QColor& color) {
 	int h, s, v;
 	color.getHsv(&h, &s, &v);
