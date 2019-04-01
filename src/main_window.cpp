@@ -436,12 +436,19 @@ ImageCanvas * MainWindow::getCurrentImageCanvas() {
 
 void MainWindow::swapView() {
     checkbox_watershed_mask->setCheckState(checkbox_watershed_mask->checkState() == Qt::CheckState::Checked ? Qt::CheckState::Unchecked : Qt::CheckState::Checked);
+    update();
+}
+
+void MainWindow::update() {
+    QWidget::update();
     ImageCanvas * ic = getCurrentImageCanvas();
     if (ic == NULL)return;
     ic->update();
 }
 
 void MainWindow::onLabelShortcut(int row) {
-	if(list_label->isEnabled())
-		list_label->setCurrentRow(row);
-	}
+    if (list_label->isEnabled()) {
+        list_label->setCurrentRow(row);
+        update();
+    }
+}
