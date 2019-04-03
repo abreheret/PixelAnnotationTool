@@ -54,6 +54,8 @@ public:
     QAction        * swap_action;
 	QAction        * redo_action  ;
 	QString          curr_open_dir;
+	QShortcut        * watershed_shortcut;
+
 public:
 	QString currentDir() const;
 	QString currentFile() const;

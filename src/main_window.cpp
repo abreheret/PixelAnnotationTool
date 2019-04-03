@@ -44,6 +44,11 @@ MainWindow::MainWindow(QWidget *parent, Qt::WindowFlags flags)
 	undo_action->setEnabled(false);
 	redo_action->setEnabled(false);
 
+	watershed_shortcut = new QShortcut(QKeySequence("Ctrl+F"), this);
+	connect(watershed_shortcut, SIGNAL(activated()), this, SLOT(runWatershed()));
+	button_watershed->setText(button_watershed->text() +
+	QString("(%1)").arg(watershed_shortcut->key().toString()));
+
 	menuFile->addAction(save_action);
     menuEdit->addAction(close_tab_action);
 	menuEdit->addAction(undo_action);
