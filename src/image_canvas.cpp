@@ -7,14 +7,14 @@
 
 ImageCanvas::ImageCanvas(MainWindow *ui) :
     QLabel() ,
-	_ui(ui),
-	_alpha(0.5),
-	_pen_size(30) {
+	_ui(ui){
 
     _scroll_parent = new QScrollArea(ui);
     setParent(_scroll_parent);
 	resize(800,600);
-	_scale = 1.0;
+	_scale = _ui->spinbox_scale->value();
+	_alpha = _ui->spinbox_alpha->value();
+	_pen_size = _ui->spinbox_pen_size->value();
 	_initPixmap();
 	setScaledContents(true);
 	setMouseTracking(true);
