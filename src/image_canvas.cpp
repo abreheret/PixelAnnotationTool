@@ -175,8 +175,9 @@ void ImageCanvas::mouseReleaseEvent(QMouseEvent * e) {
 	}
 
 	if (e->button() == Qt::RightButton) { // selection of label
-		QColor color = _mask.id.pixel(_mouse_pos / _scale);
-		const LabelInfo * label = _ui->id_labels[color.red()];
+		QColor maskColor = _mask.id.pixel(_mouse_pos / _scale);
+		QColor watershedColor = _watershed.id.pixel(_mouse_pos / _scale);
+		const LabelInfo * label = _ui->id_labels[maskColor.red()] != NULL? _ui->id_labels[maskColor.red()] : _ui->id_labels[watershedColor.red()];
 		if (label != NULL)
 		{
 			if (!_watershed.id.isNull() && _ui->checkbox_watershed_mask->isChecked()) {
