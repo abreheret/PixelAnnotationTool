@@ -67,8 +67,8 @@ MainWindow::MainWindow(QWidget *parent, Qt::WindowFlags flags)
 	connect(tabWidget             , SIGNAL(currentChanged(int))               , this, SLOT(updateConnect(int)));
     connect(tree_widget_img       , SIGNAL(itemClicked(QTreeWidgetItem *,int)), this, SLOT(treeWidgetClicked()));
     
-	labels = defaulfLabels();
 
+	labels = defaultLabels();
 	loadConfigLabels();
 
 	connect(list_label, SIGNAL(currentItemChanged(QListWidgetItem*, QListWidgetItem*)), this, SLOT(changeLabel(QListWidgetItem*, QListWidgetItem*)));

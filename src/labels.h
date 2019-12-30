@@ -29,6 +29,6 @@ public:
 class Id2Labels : public QMap<int,const LabelInfo*> { };
 
 Id2Labels getId2Label(const Name2Labels& labels);
-Name2Labels defaulfLabels();
+Name2Labels defaultLabels();
 
 #endif

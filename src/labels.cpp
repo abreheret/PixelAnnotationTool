@@ -86,7 +86,7 @@ Id2Labels getId2Label(const Name2Labels& labels) {
 	return id_labels;
 }
 
-Name2Labels defaulfLabels() {
+Name2Labels defaultLabels() {
 	Name2Labels labels;
 	// inspired by https://raw.githubusercontent.com/mcordts/cityscapesScripts/master/cityscapesscripts/helpers/labels.py
 	labels["unlabeled"           ] = LabelInfo("unlabeled"           , "void"         ,  00, 0, QColor(  0,  0,  0));
