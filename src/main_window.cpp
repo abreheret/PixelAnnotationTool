@@ -25,6 +25,7 @@ MainWindow::MainWindow(QWidget *parent, Qt::WindowFlags flags)
 	setWindowTitle(QApplication::translate("MainWindow", "PixelAnnotationTool " PIXEL_ANNOTATION_TOOL_GIT_TAG, Q_NULLPTR));
 	list_label->setSpacing(1);
     image_canvas = NULL;
+    _isLoadingNewLabels = false;
 	save_action = new QAction(tr("&Save current image"), this);
     copy_mask_action = new QAction(tr("&Copy Mask"), this);
     paste_mask_action = new QAction(tr("&Paste Mask"), this);
@@ -124,6 +125,7 @@ QString MainWindow::stringForShortCut(int id) const {
 }
 
 void MainWindow::loadConfigLabels() {
+    _isLoadingNewLabels = true;
 	list_label->clear();
 	QMapIterator<QString, LabelInfo> it(labels);
 	while (it.hasNext()) {
@@ -149,6 +151,7 @@ void MainWindow::loadConfigLabels() {
         }
 	}
 	id_labels = getId2Label(labels);
+    _isLoadingNewLabels = false;
 }
 
 void MainWindow::changeColor(QListWidgetItem* item) {
@@ -165,6 +168,8 @@ void MainWindow::changeColor(QListWidgetItem* item) {
 }
 
 void MainWindow::changeLabel(QListWidgetItem* current, QListWidgetItem* previous) {
+    if (_isLoadingNewLabels)
+        return;
 	if (current == NULL && previous == NULL)
 		return;
 

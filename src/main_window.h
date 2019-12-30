@@ -40,6 +40,7 @@ private:
     ImageCanvas * getCurrentImageCanvas();
     ImageMask _tmp;
     QVector<QShortcut*> _shortcuts;
+    bool _isLoadingNewLabels;
 
 public:
 	ImageCanvas   *  image_canvas ;
