@@ -33,8 +33,6 @@ before_script:
    - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then
         cmake .. -DCMAKE_BUILD_TYPE=$CONFIG -DDISABLE_MAINTAINER_CFLAGS=off -DCMAKE_PREFIX_PATH=$(brew --prefix qt) -DQMAKE_PATH=$(brew --prefix qt)/bin;
      else
-        echo $CMAKE_PREFIX_PATH
-        ls /opt/qt*
         cmake .. -DCMAKE_BUILD_TYPE=$CONFIG -DDISABLE_MAINTAINER_CFLAGS=off;
      fi
 
