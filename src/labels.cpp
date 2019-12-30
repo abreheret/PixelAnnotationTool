@@ -15,7 +15,6 @@ LabelInfo::LabelInfo() {
 	this->id_categorie = 0;
 	this->color = QColor(0, 0, 0);
 	item = NULL;
-	shortcut = nullptr;
 }
 
 LabelInfo::LabelInfo(QString name, QString categorie, int id, int id_categorie, QColor color) {
@@ -25,7 +24,6 @@ LabelInfo::LabelInfo(QString name, QString categorie, int id, int id_categorie, 
 	this->id_categorie = id_categorie;
 	this->color = color;
 	item = NULL;
-	shortcut = nullptr;
 }
 
 void LabelInfo::read(const QJsonObject &json) {

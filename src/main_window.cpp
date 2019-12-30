@@ -66,7 +66,8 @@ MainWindow::MainWindow(QWidget *parent, Qt::WindowFlags flags)
 	connect(tabWidget             , SIGNAL(tabCloseRequested(int))            , this, SLOT(closeTab(int)   ));
 	connect(tabWidget             , SIGNAL(currentChanged(int))               , this, SLOT(updateConnect(int)));
     connect(tree_widget_img       , SIGNAL(itemClicked(QTreeWidgetItem *,int)), this, SLOT(treeWidgetClicked()));
-    
+
+    registerShortcuts();
 
 	labels = defaultLabels();
 	loadConfigLabels();
@@ -105,6 +106,23 @@ void MainWindow::closeTab(int index) {
     }
 }
 
+void MainWindow::registerShortcuts() {
+    for (int i = 0; i < 40; i++) {
+        const QString shortcut_key = stringForShortCut(i);
+        QShortcut *shortcut = new QShortcut(QKeySequence(shortcut_key), this);
+        _shortcuts.append(shortcut);
+        connect(shortcut, &QShortcut::activated, this, [=]{onLabelShortcut(i);});
+    }
+}
+
+QString MainWindow::stringForShortCut(int id) const {
+    return (id < 10) ? QString("%1").arg((id + 1) % 10) :
+           (id < 20) ? QString("Ctrl+%1").arg((id + 1) % 10) :
+           (id < 30) ? QString("Alt+%1").arg((id + 1) % 10) :
+           (id < 40) ? QString("Ctrl+Alt+%1").arg((id + 1) % 10) :
+           QString();
+}
+
 void MainWindow::loadConfigLabels() {
 	list_label->clear();
 	QMapIterator<QString, LabelInfo> it(labels);
@@ -122,23 +140,13 @@ void MainWindow::loadConfigLabels() {
 		auto& ref = labels[it.key()];
 		ref.item = item;
 
-		int id = list_label->row(item);
-		const QString shortcut_key = (id < 9)  ? QString("Ctrl+%1").arg(id + 1) :
-                                            (id < 19) ? QString("Alt+%1").arg(id - 10 + 1)  :
-                                            (id < 29) ? QString("Ctrl+Alt+%1").arg(id - 20 + 1) :
-                                            (id < 39) ? QString("Ctrl+Shift+Alt+%1").arg(id - 30 + 1) :
-                                            QString();
+        int id = list_label->row(item);
 
-		if(id < 39) {
-			QShortcut *shortcut = new QShortcut(QKeySequence(shortcut_key), this);
-			ref.shortcut = shortcut;
-
-			QString text = label.name + " (" + ref.shortcut->key().toString() + ")";
-			label_widget->setText(text);
-
-			connect(shortcut, &QShortcut::activated, this, [=]{onLabelShortcut(id);});
-		}
-
+        if (id < 40) {
+            QShortcut * shortcut = _shortcuts.at(id);
+            QString text = label.name + " (" + shortcut->key().toString() + ")";
+            label_widget->setText(text);
+        }
 	}
 	id_labels = getId2Label(labels);
 }
@@ -441,8 +449,8 @@ void MainWindow::update() {
 }
 
 void MainWindow::onLabelShortcut(int row) {
-    if (list_label->isEnabled()) {
-        list_label->setCurrentRow(row);
+    if (list_label->isEnabled() && row < list_label->count()) {
+        list_label->setCurrentRow(row, QItemSelectionModel::ClearAndSelect);
         update();
     }
 }

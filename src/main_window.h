@@ -32,11 +32,14 @@ public:
 private:
 
 	void loadConfigLabels();
+    QString stringForShortCut(int id) const;
+    void registerShortcuts();
 	ImageCanvas * newImageCanvas();
 	int getImageCanvas(QString name, ImageCanvas *ic) ;
     ImageCanvas * getImageCanvas(int index);
     ImageCanvas * getCurrentImageCanvas();
     ImageMask _tmp;
+    QVector<QShortcut*> _shortcuts;
 
 public:
 	ImageCanvas   *  image_canvas ;
