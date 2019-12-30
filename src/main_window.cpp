@@ -145,7 +145,7 @@ void MainWindow::loadConfigLabels() {
 
 void MainWindow::changeColor(QListWidgetItem* item) {
 	LabelWidget * widget = static_cast<LabelWidget*>(list_label->itemWidget(item));
-	LabelInfo & label = labels[widget->text()];
+	LabelInfo & label = labels[widget->getName()];
 	QColor color = QColorDialog::getColor(label.color, this);
 	if (color.isValid()) {
 		label.color = color;
