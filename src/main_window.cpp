@@ -90,7 +90,7 @@ void MainWindow::closeTab(int index) {
 
     if (ic->isNotSaved()) {
         QMessageBox::StandardButton reply = QMessageBox::question(this, "Current image is not saved",
-            "You will close the current image, Would you like saved image before ?", QMessageBox::Yes | QMessageBox::No);
+            "You will close the current image. Would you like to save the image before?", QMessageBox::Yes | QMessageBox::No);
         if (reply == QMessageBox::Yes) {
             ic->saveMask();
         }
