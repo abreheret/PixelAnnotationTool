@@ -5,8 +5,8 @@ environment:
 
 install:
     - cmd: set QT5_DIR=C:\Qt\5.10.1\msvc2015_64\lib\cmake
-    - cmd: choco install curl --version=7.65.3
     - cmd: choco install OpenCV
+    - cmd: choco install curl --version=7.65.3
     - cmd: set OPENCV_DIR=C:\tools\opencv\build
     - cmd: cd C:\projects\PixelAnnotationTool
 
