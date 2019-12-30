@@ -322,7 +322,7 @@ void MainWindow::on_actionOpenDir_triggered() {
 	curr_open_dir = openedDir;
 
 	QTreeWidgetItem *currentTreeDir = new QTreeWidgetItem(tree_widget_img);
-	tree_widget_img->setItemExpanded(currentTreeDir, true);
+    currentTreeDir->setExpanded(true);
 	currentTreeDir->setText(0, curr_open_dir);
 
 	QDir current_dir(curr_open_dir);
