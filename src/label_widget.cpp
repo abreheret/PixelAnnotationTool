@@ -4,8 +4,8 @@
 #include <QDebug>
 #include <QPainter>
 
-LabelWidget::LabelWidget(const LabelInfo &label, QWidget *parent , Qt::WindowFlags f ) :
-	QLabel(parent, f) {
+LabelWidget::LabelWidget(const LabelInfo &label, QWidget *parent, Qt::WindowFlags f)
+	: QLabel(parent, f) {
 	setNewLabel(label);
 	_is_selected = false;
 }
@@ -42,6 +42,6 @@ void LabelWidget::paintEvent(QPaintEvent *event) {
 	}
 }
 
-QString LabelWidget::getName(){
+QString LabelWidget::getName() {
 	return this->_label.name;
 }

@@ -35,7 +35,7 @@ MainWindow::MainWindow(QWidget *parent, Qt::WindowFlags flags)
 	redo_action = new QAction(tr("&Redo"), this);
 	undo_action->setShortcuts(QKeySequence::Undo);
 	redo_action->setShortcuts(QKeySequence::Redo);
-	save_action->setShortcut(Qt::CTRL+Qt::Key_S);
+	save_action->setShortcut(Qt::CTRL + Qt::Key_S);
     swap_action->setShortcut(Qt::CTRL + Qt::Key_Space);
     copy_mask_action->setShortcut(Qt::CTRL + Qt::Key_C);
     paste_mask_action->setShortcut(Qt::CTRL + Qt::Key_V);
@@ -54,7 +54,7 @@ MainWindow::MainWindow(QWidget *parent, Qt::WindowFlags flags)
     menuEdit->addAction(swap_action);
 
 	tabWidget->clear();
-    
+
 	connect(button_watershed      , SIGNAL(released())                        , this, SLOT(runWatershed()  ));
     connect(swap_action           , SIGNAL(triggered())                       , this, SLOT(swapView()      ));
 	connect(actionOpen_config_file, SIGNAL(triggered())                       , this, SLOT(loadConfigFile()));
@@ -97,7 +97,7 @@ void MainWindow::closeTab(int index) {
     }
     tabWidget->removeTab(index);
     delete ic;
-    if (tabWidget->count() == 0 ) {
+    if (tabWidget->count() == 0) {
         image_canvas = NULL;
         list_label->setEnabled(false);
     } else {
@@ -113,7 +113,7 @@ void MainWindow::loadConfigLabels() {
 		const LabelInfo & label = it.value();
 		QListWidgetItem * item = new QListWidgetItem(list_label);
 		LabelWidget * label_widget = new LabelWidget(label,this);
-		
+
 		item->setSizeHint(label_widget->sizeHint());
 		item->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEnabled);
 		list_label->addItem(item);
@@ -196,7 +196,7 @@ void MainWindow::runWatershed(ImageCanvas * ic) {
 
 void MainWindow::runWatershed() {
     ImageCanvas * ic = image_canvas;
-    if( ic != NULL)
+    if (ic != NULL)
         runWatershed(ic);
 }
 
@@ -227,7 +227,6 @@ void MainWindow::updateConnect(const ImageCanvas * ic) {
 	connect(redo_action, SIGNAL(triggered()), ic, SLOT(redo()));
 	connect(save_action, SIGNAL(triggered()), ic, SLOT(saveMask()));
     connect(checkbox_border_ws, SIGNAL(clicked()), this, SLOT(runWatershed()));
-    
 }
 
 void MainWindow::allDisconnnect(const ImageCanvas * ic) {
@@ -257,10 +256,7 @@ void MainWindow::updateConnect(int index) {
         return;
     allDisconnnect(image_canvas);
     image_canvas = getImageCanvas(index);
-    if(image_canvas!= NULL)
-        list_label->setEnabled(true);
-    else 
-        list_label->setEnabled(false);
+    list_label->setEnabled(image_canvas != NULL);
 	updateConnect(image_canvas);
 }
 
@@ -282,7 +278,6 @@ int MainWindow::getImageCanvas(QString name, ImageCanvas * ic) {
 	QString filepath(iDir + "/" + name);
 	ic->loadImage(filepath);
     int index = tabWidget->addTab(ic->getScrollParent(), name);
-    
 	return index;
 }
 
@@ -302,18 +297,16 @@ QString MainWindow::currentFile() const {
 	return current->text(0);
 }
 
-
-
 void MainWindow::treeWidgetClicked() {
     QString iFile = currentFile();
     QString iDir = currentDir();
     if (iFile.isEmpty() || iDir.isEmpty())
         return;
+
     allDisconnnect(image_canvas);
     int index = getImageCanvas(iFile, image_canvas);
     updateConnect(image_canvas);
     tabWidget->setCurrentIndex(index);
-
 }
 
 void MainWindow::on_tree_widget_img_currentItemChanged(QTreeWidgetItem *current, QTreeWidgetItem *previous) {
@@ -327,7 +320,7 @@ void MainWindow::on_actionOpenDir_triggered() {
 		return;
 
 	curr_open_dir = openedDir;
-	
+
 	QTreeWidgetItem *currentTreeDir = new QTreeWidgetItem(tree_widget_img);
 	tree_widget_img->setItemExpanded(currentTreeDir, true);
 	currentTreeDir->setText(0, curr_open_dir);
@@ -338,6 +331,7 @@ void MainWindow::on_actionOpenDir_triggered() {
 	for (int i = 0; i < files.size(); i++) {
 		if (files[i].size() < 4)
 			continue;
+
 		QString ext = files[i].section(".", -1, -1);
 		bool is_image = false;
 		for (int e = 0; e < ext_img.size(); e++) {
@@ -349,13 +343,13 @@ void MainWindow::on_actionOpenDir_triggered() {
 		if (!is_image)
 			continue;
 
-		if( files[i].toLower().indexOf("_mask.png") > -1)
+		if (files[i].toLower().indexOf("_mask.png") > -1)
 			continue;
 
 		QTreeWidgetItem *currentFile = new QTreeWidgetItem(currentTreeDir);
 		currentFile->setText(0, files[i]);
 	}
-//	setWindowTitle("PixelAnnotation - " + openedDir);
+    // setWindowTitle("PixelAnnotation - " + openedDir);
 }
 
 
@@ -390,7 +384,6 @@ void MainWindow::loadConfigFile() {
 
 	loadConfigLabels();
 	update();
-
 }
 
 void MainWindow::on_actionAbout_triggered() {
@@ -405,7 +398,6 @@ void MainWindow::copyMask() {
         return;
 
     _tmp = ic->getMask();
-
 }
 
 void MainWindow::pasteMask() {
@@ -429,9 +421,9 @@ ImageCanvas * MainWindow::getCurrentImageCanvas() {
     int index = tabWidget->currentIndex();
     if (index == -1)
         return NULL;
+
     ImageCanvas * ic = getImageCanvas(index);
     return ic;
-    
 }
 
 void MainWindow::swapView() {
@@ -442,7 +434,9 @@ void MainWindow::swapView() {
 void MainWindow::update() {
     QWidget::update();
     ImageCanvas * ic = getCurrentImageCanvas();
-    if (ic == NULL)return;
+    if (ic == NULL)
+        return;
+
     ic->update();
 }
 

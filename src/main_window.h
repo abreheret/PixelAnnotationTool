@@ -30,7 +30,7 @@ public:
     MainWindow(QWidget *parent = 0, Qt::WindowFlags flags = 0);
 
 private:
-	
+
 	void loadConfigLabels();
 	ImageCanvas * newImageCanvas();
 	int getImageCanvas(QString name, ImageCanvas *ic) ;

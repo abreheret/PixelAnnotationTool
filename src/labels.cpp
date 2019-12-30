@@ -52,7 +52,6 @@ void LabelInfo::write(QJsonObject &json) const {
 	json["color"] = jarray;
 }
 
-
 void Name2Labels::read(const QJsonObject &json) {
 	QJsonObject array = json["labels"].toObject();
 	for (QJsonObject::iterator it = array.begin(); it != array.end(); it++) {
@@ -62,6 +61,7 @@ void Name2Labels::read(const QJsonObject &json) {
 		(*this)[label.name] = label;
 	}
 }
+
 void Name2Labels::write(QJsonObject &json) const {
 	QMapIterator<QString, LabelInfo> it(*this);
 	QJsonObject object;
@@ -137,7 +137,7 @@ Name2Labels defaultLabels() {
 	//	labels[it.key()].color = cmap[i++];
 	//}
 	//labels["unlabeled"].color = QColor(0, 0, 0);
-	
+
 	return labels;
 
 }
