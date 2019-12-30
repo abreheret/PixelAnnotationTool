@@ -3,7 +3,6 @@
 
 #include <QListWidgetItem>
 #include <QJsonObject>
-#include <QtWidgets/QShortcut>
 
 class LabelInfo  {
 public:

@@ -15,6 +15,7 @@
 #include <QColor>
 #include <QScrollArea>
 #include <QAbstractListModel>
+#include <QtWidgets/QShortcut>
 
 #include <qstringlistmodel.h>
 
