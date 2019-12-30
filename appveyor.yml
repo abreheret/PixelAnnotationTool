@@ -6,13 +6,13 @@ environment:
 install:
     - cmd: set QT5_DIR=C:\Qt\5.10.1\msvc2015_64\lib\cmake
     - cmd: choco install OpenCV
-    - cmd: choco install curl
+    - cmd: choco install curl --version=7.65.3
     - cmd: set OPENCV_DIR=C:\tools\opencv\build
     - cmd: cd C:\projects\PixelAnnotationTool
-        
+
 build_script:
     - cmd: mkdir build
     - cmd: cd build
     - cmd: cmake .. -DQT5_DIR=%QT5_DIR% -DOpenCV_DIR=%OPENCV_DIR% -G"Visual Studio 14 Win64"
     - cmd: cmake --build . --config Release
-    - cmd: cmake --build . --config Release --target upload_file    
+    - cmd: cmake --build . --config Release --target upload_file
