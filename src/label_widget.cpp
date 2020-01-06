@@ -4,8 +4,8 @@
 #include <QDebug>
 #include <QPainter>
 
-LabelWidget::LabelWidget(const LabelInfo &label, QWidget *parent , Qt::WindowFlags f ) :
-	QLabel(parent, f) {
+LabelWidget::LabelWidget(const LabelInfo &label, QWidget *parent, Qt::WindowFlags f)
+	: QLabel(parent, f) {
 	setNewLabel(label);
 	_is_selected = false;
 }
@@ -13,11 +13,10 @@ LabelWidget::LabelWidget(const LabelInfo &label, QWidget *parent , Qt::WindowFla
 
 void LabelWidget::setNewLabel(const LabelInfo &label) {
 	_label = label;
-	QString text = (label.shortcut) ?
-			label.name + " (" + label.shortcut->key().toString() + ")" :
-			label.name;
-
-	setText(text);
+	// Only set the text, when it is not set already
+	if (this->text() == "") {
+		setText(_label.name);
+	}
 	setAlignment(Qt::AlignHCenter);
 	setStyleSheet("QLabel { background-color : " + label.color.name() + "; color : " + readableColor(_label.color).name() + ";  font:  14px; }");
 }
@@ -42,6 +41,6 @@ void LabelWidget::paintEvent(QPaintEvent *event) {
 	}
 }
 
-QString LabelWidget::getName(){
+QString LabelWidget::getName() {
 	return this->_label.name;
 }

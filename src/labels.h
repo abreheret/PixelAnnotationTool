@@ -3,7 +3,6 @@
 
 #include <QListWidgetItem>
 #include <QJsonObject>
-#include <QtWidgets/QShortcut>
 
 class LabelInfo  {
 public:
@@ -13,7 +12,6 @@ public:
 	int     id_categorie ;
 	QColor  color        ;
 	QListWidgetItem *item;
-	QShortcut *shortcut  ;
 	LabelInfo();
 	LabelInfo(QString name, QString categorie, int id, int id_categorie, QColor color);
 	void read(const QJsonObject &json);
@@ -29,6 +27,6 @@ public:
 class Id2Labels : public QMap<int,const LabelInfo*> { };
 
 Id2Labels getId2Label(const Name2Labels& labels);
-Name2Labels defaulfLabels();
+Name2Labels defaultLabels();
 
 #endif

@@ -15,7 +15,6 @@ LabelInfo::LabelInfo() {
 	this->id_categorie = 0;
 	this->color = QColor(0, 0, 0);
 	item = NULL;
-	shortcut = nullptr;
 }
 
 LabelInfo::LabelInfo(QString name, QString categorie, int id, int id_categorie, QColor color) {
@@ -25,7 +24,6 @@ LabelInfo::LabelInfo(QString name, QString categorie, int id, int id_categorie, 
 	this->id_categorie = id_categorie;
 	this->color = color;
 	item = NULL;
-	shortcut = nullptr;
 }
 
 void LabelInfo::read(const QJsonObject &json) {
@@ -52,7 +50,6 @@ void LabelInfo::write(QJsonObject &json) const {
 	json["color"] = jarray;
 }
 
-
 void Name2Labels::read(const QJsonObject &json) {
 	QJsonObject array = json["labels"].toObject();
 	for (QJsonObject::iterator it = array.begin(); it != array.end(); it++) {
@@ -62,6 +59,7 @@ void Name2Labels::read(const QJsonObject &json) {
 		(*this)[label.name] = label;
 	}
 }
+
 void Name2Labels::write(QJsonObject &json) const {
 	QMapIterator<QString, LabelInfo> it(*this);
 	QJsonObject object;
@@ -86,7 +84,7 @@ Id2Labels getId2Label(const Name2Labels& labels) {
 	return id_labels;
 }
 
-Name2Labels defaulfLabels() {
+Name2Labels defaultLabels() {
 	Name2Labels labels;
 	// inspired by https://raw.githubusercontent.com/mcordts/cityscapesScripts/master/cityscapesscripts/helpers/labels.py
 	labels["unlabeled"           ] = LabelInfo("unlabeled"           , "void"         ,  00, 0, QColor(  0,  0,  0));
@@ -137,7 +135,7 @@ Name2Labels defaulfLabels() {
 	//	labels[it.key()].color = cmap[i++];
 	//}
 	//labels["unlabeled"].color = QColor(0, 0, 0);
-	
+
 	return labels;
 
 }

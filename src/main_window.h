@@ -15,6 +15,7 @@
 #include <QColor>
 #include <QScrollArea>
 #include <QAbstractListModel>
+#include <QtWidgets/QShortcut>
 
 #include <qstringlistmodel.h>
 
@@ -30,13 +31,17 @@ public:
     MainWindow(QWidget *parent = 0, Qt::WindowFlags flags = 0);
 
 private:
-	
+
 	void loadConfigLabels();
+    QString stringForShortCut(int id) const;
+    void registerShortcuts();
 	ImageCanvas * newImageCanvas();
 	int getImageCanvas(QString name, ImageCanvas *ic) ;
     ImageCanvas * getImageCanvas(int index);
     ImageCanvas * getCurrentImageCanvas();
     ImageMask _tmp;
+    QVector<QShortcut*> _shortcuts;
+    bool _isLoadingNewLabels;
 
 public:
 	ImageCanvas   *  image_canvas ;
