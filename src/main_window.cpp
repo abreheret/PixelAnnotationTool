@@ -34,6 +34,8 @@ MainWindow::MainWindow(QWidget *parent, Qt::WindowFlags flags)
     swap_action = new QAction(tr("&Swap check box Watershed"), this);
 	undo_action = new QAction(tr("&Undo"), this);
 	redo_action = new QAction(tr("&Redo"), this);
+    next_file_action = new QAction(tr("&Select next file"), this);
+    previous_file_action = new QAction(tr("&Select previous file"), this);
 	undo_action->setShortcuts(QKeySequence::Undo);
 	redo_action->setShortcuts(QKeySequence::Redo);
 	save_action->setShortcut(Qt::CTRL + Qt::Key_S);
@@ -42,6 +44,8 @@ MainWindow::MainWindow(QWidget *parent, Qt::WindowFlags flags)
     paste_mask_action->setShortcut(Qt::CTRL + Qt::Key_V);
     clear_mask_action->setShortcut(Qt::CTRL + Qt::Key_R);
     close_tab_action->setShortcut(Qt::CTRL + Qt::Key_W);
+    next_file_action->setShortcut(Qt::CTRL + Qt::SHIFT + Qt::Key_Down);
+    previous_file_action->setShortcut(Qt::CTRL + Qt::SHIFT + Qt::Key_Up);
 	undo_action->setEnabled(false);
 	redo_action->setEnabled(false);
 
@@ -53,6 +57,8 @@ MainWindow::MainWindow(QWidget *parent, Qt::WindowFlags flags)
     menuEdit->addAction(paste_mask_action);
     menuEdit->addAction(clear_mask_action);
     menuEdit->addAction(swap_action);
+    menuEdit->addAction(next_file_action);
+    menuEdit->addAction(previous_file_action);
 
 	tabWidget->clear();
 
@@ -64,6 +70,8 @@ MainWindow::MainWindow(QWidget *parent, Qt::WindowFlags flags)
     connect(copy_mask_action      , SIGNAL(triggered())                       , this, SLOT(copyMask()));
     connect(paste_mask_action     , SIGNAL(triggered())                       , this, SLOT(pasteMask()));
     connect(clear_mask_action     , SIGNAL(triggered())                       , this, SLOT(clearMask()));
+    connect(next_file_action      , SIGNAL(triggered())                       , this, SLOT(nextFile()));
+    connect(previous_file_action  , SIGNAL(triggered())                       , this, SLOT(previousFile()));
 	connect(tabWidget             , SIGNAL(tabCloseRequested(int))            , this, SLOT(closeTab(int)   ));
 	connect(tabWidget             , SIGNAL(currentChanged(int))               , this, SLOT(updateConnect(int)));
     connect(tree_widget_img       , SIGNAL(itemClicked(QTreeWidgetItem *,int)), this, SLOT(treeWidgetClicked()));
@@ -365,6 +373,23 @@ void MainWindow::on_actionOpenDir_triggered() {
     // setWindowTitle("PixelAnnotation - " + openedDir);
 }
 
+void MainWindow::nextFile() {
+    QTreeWidgetItem *currentItem = tree_widget_img->currentItem();
+    if (!currentItem) return;
+    QTreeWidgetItem *nextItem = tree_widget_img->itemBelow(currentItem);
+    if (!nextItem) return;
+    tree_widget_img->setCurrentItem(nextItem);
+    treeWidgetClicked();
+}
+
+void MainWindow::previousFile() {
+    QTreeWidgetItem *currentItem = tree_widget_img->currentItem();
+    if (!currentItem) return;
+    QTreeWidgetItem *previousItem = tree_widget_img->itemAbove(currentItem);
+    if (!previousItem) return;
+    tree_widget_img->setCurrentItem(previousItem);
+    treeWidgetClicked();
+}
 
 void MainWindow::saveConfigFile() {
 	QString file = QFileDialog::getSaveFileName(this, tr("Save Config File"), QString(), tr("JSon file (*.json)"));
