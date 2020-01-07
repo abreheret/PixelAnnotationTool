@@ -57,7 +57,9 @@ public:
     QAction        * close_tab_action;
 	QAction        * undo_action  ;
     QAction        * swap_action;
-	QAction        * redo_action  ;
+    QAction        * redo_action  ;
+    QAction        * next_file_action;
+	QAction        * previous_file_action;
 	QString          curr_open_dir;
 public:
 	QString currentDir() const;
@@ -84,6 +86,8 @@ public slots:
     void copyMask();
     void pasteMask();
     void clearMask();
+    void nextFile();
+    void previousFile();
 	void updateConnect(int index);
     void treeWidgetClicked();
     void onLabelShortcut(int row);
