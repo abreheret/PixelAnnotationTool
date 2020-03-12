@@ -137,20 +137,28 @@ QImage watershed(const QImage& qimage, const QImage & qmarkers_mask) {
 QImage removeBorder(const QImage & mask_id, const Id2Labels & labels, cv::Size win_size) {
 	QImage result = mask_id.copy();
 
-	for (int y = 1; y < mask_id.height() - 1; y++) {
+	// loop through image
+	for (int y = 0; y < mask_id.height(); y++) {
 		const uchar * line_curr = mask_id.scanLine(y);
 		uchar * line_out = result.scanLine(y);
-		for (int X = 1; X < mask_id.width() - 1; X++) {
+		for (int X = 0; X < mask_id.width(); X++) {
+			// multiply by 3 to match RGB
 			int x = X * 3;
 			int id = line_curr[x];
 			if (labels.find(id) == labels.end()) {
+				// map id # to amount of occurences
 				std::map<int, int> mapk;
+				// loop through window (3*3 default size)
 				for (int yy = -(win_size.height >> 1); yy <= win_size.height >> 1; yy++) {
-					const uchar * l_curr = mask_id.scanLine(y + yy);
+					int yyy = y + yy;
+					if (yyy < 0 || yyy >= mask_id.height()) continue;
+					const uchar * l_curr = mask_id.scanLine(yyy);
 					for (int xx = -(win_size.width >> 1); xx <= win_size.width >> 1; xx++) {
-						if (yy == 0 && xx == 0) continue;
-						if (mapk.find(l_curr[x+xx]) != mapk.end()) mapk[l_curr[x + xx]] ++;
-						else mapk[l_curr[x + xx]] = 1;
+						int xxx = x + xx * 3;
+						if (xxx < 0 || xxx >= mask_id.width() * 3) continue;
+						if ((yyy == y && xxx == x)) continue;
+						if (mapk.find(l_curr[xxx]) != mapk.end()) mapk[l_curr[xxx]] ++;
+						else mapk[l_curr[xxx]] = 1;
 					}
 				}
 				int id_max = 0;
