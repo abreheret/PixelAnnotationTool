@@ -13,6 +13,8 @@ jobs:
       env: QT5=511 PPA=beineri/opt-qt-5.11.3-bionic
     - os: osx
       osx_image: xcode10.2
+    - os: osx
+      osx_image: xcode11.3
 
 env:
     - CONFIG=Release
