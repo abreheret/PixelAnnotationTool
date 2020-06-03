@@ -3,9 +3,14 @@ branches:
   only:
     - master
     - dev
-os:
-    - linux
-    - osx
+jobs:
+  include:
+    - os: linux
+      dist: xenial
+    - os: linux
+      dist: bionic
+    - os: osx
+      osx_image: xcode10.2
 
 env:
     - CONFIG=Release
