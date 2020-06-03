@@ -7,8 +7,10 @@ jobs:
   include:
     - os: linux
       dist: xenial
+      env: QT5=510 PPA=beineri/opt-qt-5.10.1-xenial
     - os: linux
       dist: bionic
+      env: QT5=511 PPA=beineri/opt-qt-5.11.3-bionic
     - os: osx
       osx_image: xcode10.2
 
@@ -26,9 +28,7 @@ before_install:
         brew install opencv;
         brew install curl;
       else
-        QT_VERSION_MM=510;
-        QT_VERSION_FULL=5.10.1-xenial;
-        sudo apt-add-repository --yes ppa:beineri/opt-qt-$QT_VERSION_FULL && sudo apt-get update -qq && sudo apt-get install -qq qt${QT_VERSION_MM}base qt${QT_VERSION_MM}script qt${QT_VERSION_MM}tools && export CMAKE_PREFIX_PATH=/opt/qt${QT_VERSION_MM};
+        sudo apt-add-repository --yes ppa:$PPA && sudo apt-get update -qq && sudo apt-get install -qy qt${QT5}base qt${QT5}script qt${QT5}multimedia && export CMAKE_PREFIX_PATH=/opt/qt${QT5};
         sudo apt-get install libopencv-dev curl libgl1-mesa-dev;
       fi
 before_script:
