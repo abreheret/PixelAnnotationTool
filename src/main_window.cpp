@@ -14,6 +14,7 @@
 #include <QJsonArray>
 #include <QColorDialog>
 #include <QTextStream>
+#include <QMimeData>
 #include "pixel_annotation_tool_version.h"
 
 #include "about_dialog.h"
@@ -85,6 +86,23 @@ MainWindow::MainWindow(QWidget *parent, Qt::WindowFlags flags)
 	connect(list_label, SIGNAL(itemDoubleClicked(QListWidgetItem*)), this, SLOT(changeColor(QListWidgetItem*)));
 
     list_label->setEnabled(false);
+
+    setAcceptDrops(true);
+}
+
+void MainWindow::dragEnterEvent(QDragEnterEvent *e) {
+    if (e->mimeData()->hasUrls()) {
+        e->acceptProposedAction();
+    }
+}
+
+void MainWindow::dropEvent(QDropEvent *e) {
+    for (const QUrl &url : e->mimeData()->urls()) {
+        QDir d = QFileInfo(url.toLocalFile()).absoluteDir();
+        QString absolute = d.absolutePath();
+        curr_open_dir = absolute;
+        this->openDirectory();
+    }
 }
 
 void MainWindow::closeCurrentTab() {
@@ -341,7 +359,11 @@ void MainWindow::on_actionOpenDir_triggered() {
 		return;
 
 	curr_open_dir = openedDir;
+    this->openDirectory();
+}
 
+void MainWindow::openDirectory()
+{
 	QTreeWidgetItem *currentTreeDir = new QTreeWidgetItem(tree_widget_img);
     currentTreeDir->setExpanded(true);
 	currentTreeDir->setText(0, curr_open_dir);
