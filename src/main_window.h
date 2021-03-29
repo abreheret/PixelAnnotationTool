@@ -33,6 +33,7 @@ public:
 private:
 
 	void loadConfigLabels();
+    void openDirectory();
     QString stringForShortCut(int id) const;
     void registerShortcuts();
 	ImageCanvas * newImageCanvas();
@@ -68,6 +69,8 @@ public:
     void allDisconnnect(const ImageCanvas * ic);
     void runWatershed(ImageCanvas * ic);
     void setStarAtNameOfTab(bool star);
+    void dragEnterEvent(QDragEnterEvent *e) override;
+    void dropEvent(QDropEvent *e) override;
 
 public slots:
 
