@@ -1,9 +1,6 @@
 cmake_minimum_required(VERSION 3.2)
 project(PixelAnnotationTool)
 
-
-
-set(QT5_DIR "~/Qt5.9.1/5.9.1/msvc2015_64/lib/cmake" CACHE STRING "Additional search paths for QT5")
 set(CMAKE_AUTOMOC ON)
 
 if(WIN32)
