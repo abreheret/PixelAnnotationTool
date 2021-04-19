@@ -8,7 +8,6 @@
 #include <QPen>
 #include <QScrollArea>
 
-#define TEST1
 
 class MainWindow;
 
@@ -73,15 +72,10 @@ private:
     ColorMask        _color            ;
     int              _pen_size         ;
     bool             _button_is_pressed;
-    #ifdef TEST1
-        QSize _act_im_size             ;
-    #endif
+    QSize _act_im_size             ;
 
-#ifdef TEST1
 private slots:
     void adjustScrollBars();
-
-#endif
 
 };
 

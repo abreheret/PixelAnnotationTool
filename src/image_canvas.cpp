@@ -104,7 +104,6 @@ void ImageCanvas::scaleChanged(double scale) {
     adjustScrollBars();
 }
 
-#ifdef TEST1
 void ImageCanvas::adjustScrollBars()
 {
     //   x ------>
@@ -140,7 +139,7 @@ void ImageCanvas::adjustScrollBars()
         horizontalScroll->setValue(horizScrollSpace*posWidthRel);
     }
 }
-#endif
+
 
 void ImageCanvas::alphaChanged(double alpha) {
     _alpha = alpha;
@@ -184,21 +183,12 @@ void ImageCanvas::mouseMoveEvent(QMouseEvent * e) {
 
     if (_button_is_pressed)
         _drawFillCircle(e);
-#ifdef TEST1
-    _act_im_size = _image.size() * _scale;
 
-    int h = _scroll_parent->horizontalScrollBar()->maximum();
-    int v = _scroll_parent->verticalScrollBar()->maximum();
-    int imHeight = _image.size().height()*_scale;
-    int imWidth = _image.size().width()*_scale;
+    _act_im_size = _image.size() * _scale; //important for adjusting the scrollBars
 
+    //using statusbar to show actual _mouse_pos
     _ui->statusbar->showMessage("X: " + QString::number(_mouse_pos.x()) + " " +
-                                "Y: " + QString::number(_mouse_pos.y()) + " " +
-                                "max_h: " + QString::number(h) + " max_v: " + QString::number(v) +
-                                " scrollV: " + QString::number(_scroll_parent->verticalScrollBar()->value()) +
-                                " scrollH: " + QString::number(_scroll_parent->horizontalScrollBar()->value()) +
-                                " imWidth: " + QString::number(imWidth) + " imHeight: " + QString::number(imHeight) );
-#endif
+                                "Y: " + QString::number(_mouse_pos.y()) );
     update();
 }
 
