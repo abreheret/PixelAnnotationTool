@@ -38,7 +38,7 @@ void ImageCanvas::_initPixmap() {
 	newPixmap.fill(Qt::white);
 	QPainter painter(&newPixmap);
 	const QPixmap * p = pixmap();
-	if (p != NULL)
+	if (p != nullptr)
 		painter.drawPixmap(0, 0, *pixmap());
 	painter.end();
 	setPixmap(newPixmap);
@@ -133,7 +133,7 @@ void ImageCanvas::paintEvent(QPaintEvent *event) {
 		_mouse_pos.y() <= QLabel::size().height()-10) {
 		painter.setBrush(QBrush(_color.color));
 		painter.setPen(QPen(QBrush(_color.color), 1.0));
-		painter.drawEllipse(_mouse_pos.x() / _scale - _pen_size / 2, _mouse_pos.y() / _scale - _pen_size / 2, _pen_size, _pen_size);
+		painter.drawEllipse((int) (_mouse_pos.x() / _scale - _pen_size / 2.), (int) (_mouse_pos.y() / _scale - _pen_size / 2.), _pen_size, _pen_size);
 		painter.end();
 	}
 }
@@ -178,7 +178,7 @@ void ImageCanvas::mouseReleaseEvent(QMouseEvent * e) {
 		QColor maskColor = _mask.id.pixel(_mouse_pos / _scale);
 		QColor watershedColor = _watershed.id.pixel(_mouse_pos / _scale);
 		const LabelInfo * label = _ui->id_labels[maskColor.red()] != NULL? _ui->id_labels[maskColor.red()] : _ui->id_labels[watershedColor.red()];
-		if (label != NULL)
+		if (label != nullptr)
 		{
 			if (!_watershed.id.isNull() && _ui->checkbox_watershed_mask->isChecked()) {
 				QColor color = QColor(_watershed.id.pixel(_mouse_pos / _scale));
@@ -187,8 +187,8 @@ void ImageCanvas::mouseReleaseEvent(QMouseEvent * e) {
 					label = it.value();
 				}
 			}
-			if (label->item != NULL)
-				emit(_ui->list_label->currentItemChanged(label->item, NULL));
+			if (label->item != nullptr)
+				emit(_ui->list_label->currentItemChanged(label->item, nullptr));
 			refresh();
 		}
 	}
@@ -197,12 +197,12 @@ void ImageCanvas::mouseReleaseEvent(QMouseEvent * e) {
 	{
 		int x, y;
 		if (_pen_size > 0) {
-			x = e->x() / _scale;
-			y = e->y() / _scale;
+            x = (int) (e->x() / _scale);
+            y = (int) (e->y() / _scale);
 		}
 		else {
-			x = (e->x() + 0.5) / _scale;
-			y = (e->y() + 0.5) / _scale;
+            x = (int) ((e->x() + 0.5) / _scale);
+            y = (int) ((e->y() + 0.5) / _scale);
 		}
 
 		_mask.exchangeLabel(x, y, _ui->id_labels, _color);
@@ -220,12 +220,12 @@ void ImageCanvas::mousePressEvent(QMouseEvent * e) {
 
 void ImageCanvas::_drawFillCircle(QMouseEvent * e) {
 	if (_pen_size > 0) {
-		int x = e->x() / _scale - _pen_size / 2;
-		int y = e->y() / _scale - _pen_size / 2;
+        int x = (int) (e->x() / _scale - _pen_size / 2.);
+        int y = (int) (e->y() / _scale - _pen_size / 2.);
 		_mask.drawFillCircle(x, y, _pen_size, _color);
 	} else {
-		int x = (e->x()+0.5) / _scale ;
-		int y = (e->y()+0.5) / _scale ;
+        int x = (int) ((e->x() + 0.5) / _scale);
+        int y = (int) ((e->y() + 0.5) / _scale);
 		_mask.drawPixel(x, y, _color);
 	}
 	update();

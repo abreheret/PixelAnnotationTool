@@ -1,13 +1,10 @@
 #include "main_window.h"
 #include "utils.h"
-#include <QException>
-#include <QDebug>
 #include <QFileDialog>
 #include <QMessageBox>
 #include <QDir>
 #include <QFile>
 #include <QStringList>
-#include <QMessageBox>
 #include <QJsonDocument>
 #include <QPainter>
 #include <QJsonObject>
@@ -19,13 +16,13 @@
 
 #include "about_dialog.h"
 
-MainWindow::MainWindow(QWidget *parent, Qt::WindowFlags flags)
-	: QMainWindow(parent, flags)
+MainWindow::MainWindow(QWidget *parent)
+	: QMainWindow(parent)
 {
 	setupUi(this);
 	setWindowTitle(QApplication::translate("MainWindow", "PixelAnnotationTool " PIXEL_ANNOTATION_TOOL_GIT_TAG, Q_NULLPTR));
 	list_label->setSpacing(1);
-    image_canvas = NULL;
+    image_canvas = nullptr;
     _isLoadingNewLabels = false;
 	save_action = new QAction(tr("&Save current image"), this);
     copy_mask_action = new QAction(tr("&Copy Mask"), this);
@@ -113,7 +110,7 @@ void MainWindow::closeCurrentTab() {
 
 void MainWindow::closeTab(int index) {
     ImageCanvas * ic = getImageCanvas(index);
-    if (ic == NULL)
+    if (ic == nullptr)
         throw std::logic_error("error index");
 
     if (ic->isNotSaved()) {
@@ -126,7 +123,7 @@ void MainWindow::closeTab(int index) {
     tabWidget->removeTab(index);
     delete ic;
     if (tabWidget->count() == 0) {
-        image_canvas = NULL;
+        image_canvas = nullptr;
         list_label->setEnabled(false);
     } else {
         image_canvas = getImageCanvas(std::min(index, tabWidget->count()-1));
@@ -136,7 +133,7 @@ void MainWindow::closeTab(int index) {
 void MainWindow::registerShortcuts() {
     for (int i = 0; i < 40; i++) {
         const QString shortcut_key = stringForShortCut(i);
-        QShortcut *shortcut = new QShortcut(QKeySequence(shortcut_key), this);
+        auto *shortcut = new QShortcut(QKeySequence(shortcut_key), this);
         _shortcuts.append(shortcut);
         connect(shortcut, &QShortcut::activated, this, [=]{onLabelShortcut(i);});
     }
@@ -157,8 +154,8 @@ void MainWindow::loadConfigLabels() {
 	while (it.hasNext()) {
 		it.next();
 		const LabelInfo & label = it.value();
-		QListWidgetItem * item = new QListWidgetItem(list_label);
-		LabelWidget * label_widget = new LabelWidget(label,this);
+		auto * item = new QListWidgetItem(list_label);
+		auto * label_widget = new LabelWidget(label,this);
 
 		item->setSizeHint(label_widget->sizeHint());
 		item->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEnabled);
@@ -181,7 +178,7 @@ void MainWindow::loadConfigLabels() {
 }
 
 void MainWindow::changeColor(QListWidgetItem* item) {
-	LabelWidget * widget = static_cast<LabelWidget*>(list_label->itemWidget(item));
+	auto * widget = dynamic_cast<LabelWidget*>(list_label->itemWidget(item));
 	LabelInfo & label = labels[widget->getName()];
 	QColor color = QColorDialog::getColor(label.color, this);
 	if (color.isValid()) {
@@ -196,23 +193,23 @@ void MainWindow::changeColor(QListWidgetItem* item) {
 void MainWindow::changeLabel(QListWidgetItem* current, QListWidgetItem* previous) {
     if (_isLoadingNewLabels)
         return;
-	if (current == NULL && previous == NULL)
+	if (current == nullptr && previous == nullptr)
 		return;
 
 	LabelWidget * label;
-	if (previous == NULL) {
+	if (previous == nullptr) {
 		for (int i = 0; i < list_label->count(); i++) {
-			LabelWidget * label = static_cast<LabelWidget*>(list_label->itemWidget(list_label->item(i)));
+			label = dynamic_cast<LabelWidget*>(list_label->itemWidget(list_label->item(i)));
 			label->setSelected(false);
 		}
 	} else {
-		label = static_cast<LabelWidget*>(list_label->itemWidget(previous));
+		label = dynamic_cast<LabelWidget*>(list_label->itemWidget(previous));
 		label->setSelected(false);
 	}
 
-	if (current == NULL) current = previous;
+	if (current == nullptr) current = previous;
 
-	label = static_cast<LabelWidget*>(list_label->itemWidget(current));
+	label = dynamic_cast<LabelWidget*>(list_label->itemWidget(current));
 	label->setSelected(true);
 
 	QString str;
@@ -235,7 +232,7 @@ void MainWindow::runWatershed(ImageCanvas * ic) {
 
 void MainWindow::runWatershed() {
     ImageCanvas * ic = image_canvas;
-    if (ic != NULL)
+    if (ic != nullptr)
         runWatershed(ic);
 }
 
@@ -255,7 +252,7 @@ void MainWindow::setStarAtNameOfTab(bool star) {
 }
 
 void MainWindow::updateConnect(const ImageCanvas * ic) {
-    if (ic == NULL) return;
+    if (ic == nullptr) return;
     connect(spinbox_scale, SIGNAL(valueChanged(double)), ic, SLOT(scaleChanged(double)));
     connect(spinbox_alpha, SIGNAL(valueChanged(double)), ic, SLOT(alphaChanged(double)));
     connect(spinbox_pen_size, SIGNAL(valueChanged(int)), ic, SLOT(setSizePen(int)));
@@ -269,7 +266,7 @@ void MainWindow::updateConnect(const ImageCanvas * ic) {
 }
 
 void MainWindow::allDisconnnect(const ImageCanvas * ic) {
-    if (ic == NULL) return;
+    if (ic == nullptr) return;
     disconnect(spinbox_scale, SIGNAL(valueChanged(double)), ic, SLOT(scaleChanged(double)));
     disconnect(spinbox_alpha, SIGNAL(valueChanged(double)), ic, SLOT(alphaChanged(double)));
     disconnect(spinbox_pen_size, SIGNAL(valueChanged(int)), ic, SLOT(setSizePen(int)));
@@ -283,7 +280,7 @@ void MainWindow::allDisconnnect(const ImageCanvas * ic) {
 }
 
 ImageCanvas * MainWindow::newImageCanvas() {
-    ImageCanvas * ic = new ImageCanvas( this);
+    auto * ic = new ImageCanvas( this);
 	ic->setSizePolicy(QSizePolicy::Ignored, QSizePolicy::Ignored);
 	ic->setScaledContents(true);
 	updateConnect(ic);
@@ -295,13 +292,13 @@ void MainWindow::updateConnect(int index) {
         return;
     allDisconnnect(image_canvas);
     image_canvas = getImageCanvas(index);
-    list_label->setEnabled(image_canvas != NULL);
+    list_label->setEnabled(image_canvas != nullptr);
 	updateConnect(image_canvas);
 }
 
 ImageCanvas * MainWindow::getImageCanvas(int index) {
-    QScrollArea * scroll_area = static_cast<QScrollArea *>(tabWidget->widget(index));
-    ImageCanvas * ic = static_cast<ImageCanvas*>(scroll_area->widget());
+    auto * scroll_area = dynamic_cast<QScrollArea *>(tabWidget->widget(index));
+    auto * ic = dynamic_cast<ImageCanvas*>(scroll_area->widget());
     return ic;
 }
 
@@ -364,7 +361,7 @@ void MainWindow::on_actionOpenDir_triggered() {
 
 void MainWindow::openDirectory()
 {
-	QTreeWidgetItem *currentTreeDir = new QTreeWidgetItem(tree_widget_img);
+	auto *currentTreeDir = new QTreeWidgetItem(tree_widget_img);
     currentTreeDir->setExpanded(true);
 	currentTreeDir->setText(0, curr_open_dir);
 
@@ -389,7 +386,7 @@ void MainWindow::openDirectory()
 		if (files[i].toLower().indexOf("_mask.png") > -1)
 			continue;
 
-		QTreeWidgetItem *currentFile = new QTreeWidgetItem(currentTreeDir);
+		auto *currentFile = new QTreeWidgetItem(currentTreeDir);
 		currentFile->setText(0, files[i]);
 	}
     // setWindowTitle("PixelAnnotation - " + openedDir);
@@ -447,14 +444,14 @@ void MainWindow::loadConfigFile() {
 }
 
 void MainWindow::on_actionAbout_triggered() {
-	AboutDialog *d = new AboutDialog(this);
+	auto *d = new AboutDialog(this);
 	d->setModal(true);
 	d->show();
 }
 
 void MainWindow::copyMask() {
     ImageCanvas * ic = getCurrentImageCanvas();
-    if (ic == NULL)
+    if (ic == nullptr)
         return;
 
     _tmp = ic->getMask();
@@ -462,7 +459,7 @@ void MainWindow::copyMask() {
 
 void MainWindow::pasteMask() {
     ImageCanvas * ic = getCurrentImageCanvas();
-    if (ic == NULL)
+    if (ic == nullptr)
         return;
 
     ic->setActionMask(_tmp);
@@ -470,7 +467,7 @@ void MainWindow::pasteMask() {
 
 void MainWindow::clearMask() {
     ImageCanvas * ic = getCurrentImageCanvas();
-    if (ic == NULL)
+    if (ic == nullptr)
         return;
 
     ImageMask clear(QSize(ic->width(),ic->height()));
@@ -480,7 +477,7 @@ void MainWindow::clearMask() {
 ImageCanvas * MainWindow::getCurrentImageCanvas() {
     int index = tabWidget->currentIndex();
     if (index == -1)
-        return NULL;
+        return nullptr;
 
     ImageCanvas * ic = getImageCanvas(index);
     return ic;
@@ -494,7 +491,7 @@ void MainWindow::swapView() {
 void MainWindow::update() {
     QWidget::update();
     ImageCanvas * ic = getCurrentImageCanvas();
-    if (ic == NULL)
+    if (ic == nullptr)
         return;
 
     ic->update();
