@@ -120,22 +120,22 @@ void ImageCanvas::adjustScrollBars()
 
     if(_scroll_parent->verticalScrollBar())
     {
-        float_t posHeightRel = float_t (mPos.y()/imSize.height());  //Relation Mauspos zu Höhe des Images
+        auto posHeightRel = auto (mPos.y()/imSize.height());  //Relation Mauspos to Height of Image
 
-        //Ziel scrollBar an Position setzen, wo Mauszeiger ist
+        //set vertical scrollbar to mouse position
         QScrollBar * verticalScroll = _scroll_parent->verticalScrollBar();
-        double vertScrollSpace = verticalScroll->maximum() - verticalScroll->minimum(); // allg
+        double vertScrollSpace = verticalScroll->maximum() - verticalScroll->minimum(); // general calculating of moving-space
         verticalScroll->setValue(vertScrollSpace*posHeightRel);
-            //mögliche Alternative: QWheelEvent::angleDelta().y() -> see example!!! : https://doc.qt.io/qt-5/qwheelevent.html#angleDelta
+        //alternative: QWheelEvent::angleDelta().y() -> see example!!! : https://doc.qt.io/qt-5/qwheelevent.html#angleDelta
     }
 
     if(_scroll_parent->horizontalScrollBar())
     {
-        float_t posWidthRel = float_t (mPos.x()/imSize.width()); //Relation Mauspos zu Breite des Images
+        auto posWidthRel = auto (mPos.x()/imSize.width()); ////Relation Mauspos to Width of Image
 
-        //Ziel scrollBar an Position setzen, wo Mauszeiger ist
+        //set horizontal scrollbar to mouse position
         QScrollBar * horizontalScroll = _scroll_parent->horizontalScrollBar();
-        double horizScrollSpace = horizontalScroll->maximum() - horizontalScroll->minimum(); // allg Berechnung des Bewegungsraumes
+        double horizScrollSpace = horizontalScroll->maximum() - horizontalScroll->minimum(); // general calculating of moving-space
         horizontalScroll->setValue(horizScrollSpace*posWidthRel);
     }
 }
