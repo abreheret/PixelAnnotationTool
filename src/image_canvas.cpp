@@ -54,8 +54,8 @@ void ImageCanvas::loadImage(const QString &filename) {
 
 	_image = mat2QImage(cv::imread(_img_file.toStdString()));
 	
-	_mask_file = file.dir().absolutePath()+ "/" + file.baseName() + "_mask.png";
-	_watershed_file = file.dir().absolutePath()+ "/" + file.baseName() + "_watershed_mask.png";
+	_mask_file = file.dir().absolutePath()+ "/" + file.completeBaseName() + "_mask.png";
+	_watershed_file = file.dir().absolutePath()+ "/" + file.completeBaseName() + "_watershed_mask.png";
 
 	_watershed = ImageMask(_image.size());
 	_undo_list.clear();
@@ -88,7 +88,7 @@ void ImageCanvas::saveMask() {
 //         }
 		watershed.save(_watershed_file);
 		QFileInfo file(_img_file);
-		QString color_file = file.dir().absolutePath() + "/" + file.baseName() + "_color_mask.png";
+		QString color_file = file.dir().absolutePath() + "/" + file.completeBaseName() + "_color_mask.png";
 		idToColor(watershed, _ui->id_labels).save(color_file);
 	}
     _undo_list.clear();
