@@ -94,7 +94,7 @@ MainWindow::MainWindow(QWidget *parent, Qt::WindowFlags flags)
 
 void MainWindow::writeSettings()
 {
-    QSettings settings(QSettings::UserScope);
+    QSettings settings;
 
     settings.setValue("window/size", size());
     settings.setValue("window/pos", pos());
@@ -105,7 +105,7 @@ void MainWindow::writeSettings()
 
 void MainWindow::readSettings()
 {
-    QSettings settings(QSettings::UserScope);
+    QSettings settings;
 
     resize(settings.value("window/size", QSize(1511, 967)).toSize());
     move(settings.value("window/pos", QPoint(0, 0)).toPoint());
