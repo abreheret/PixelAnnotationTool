@@ -15,6 +15,7 @@
 #include <QColorDialog>
 #include <QTextStream>
 #include <QMimeData>
+#include <QSettings>
 #include "pixel_annotation_tool_version.h"
 
 #include "about_dialog.h"
@@ -88,6 +89,35 @@ MainWindow::MainWindow(QWidget *parent, Qt::WindowFlags flags)
     list_label->setEnabled(false);
 
     setAcceptDrops(true);
+    readSettings();
+}
+
+void MainWindow::writeSettings()
+{
+    QSettings settings(QSettings::UserScope);
+
+    settings.setValue("window/size", size());
+    settings.setValue("window/pos", pos());
+    settings.setValue("pen_size", spinbox_pen_size->value());
+    settings.setValue("alpha", spinbox_alpha->value());
+    settings.setValue("scale", spinbox_scale->value());
+}
+
+void MainWindow::readSettings()
+{
+    QSettings settings(QSettings::UserScope);
+
+    resize(settings.value("window/size", QSize(1511, 967)).toSize());
+    move(settings.value("window/pos", QPoint(0, 0)).toPoint());
+    spinbox_pen_size->setValue(settings.value("pen_size", QVariant(30)).toInt());
+    spinbox_alpha->setValue(settings.value("alpha", QVariant(0.4)).toDouble());
+    spinbox_scale->setValue(settings.value("scale", QVariant(1.0)).toDouble());
+}
+
+void MainWindow::closeEvent(QCloseEvent *event)
+{
+    writeSettings();
+    event->accept();
 }
 
 void MainWindow::dragEnterEvent(QDragEnterEvent *e) {
