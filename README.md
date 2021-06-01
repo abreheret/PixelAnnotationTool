@@ -53,7 +53,7 @@ Permissions of this copyleft license are conditioned on making available complet
 ### Citation :
 
 ```bib
-  @MISC{Breheret:2017
+  @MISC{Breheret:2017,
     author = {Amaury Br{\'e}h{\'e}ret},
     title = {{Pixel Annotation Tool}},
     howpublished = "\url{https://github.com/abreheret/PixelAnnotationTool}",
