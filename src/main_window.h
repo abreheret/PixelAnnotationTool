@@ -32,6 +32,8 @@ public:
 
 private:
 
+    void writeSettings();
+    void readSettings();
 	void loadConfigLabels();
     void openDirectory();
     QString stringForShortCut(int id) const;
@@ -71,6 +73,9 @@ public:
     void setStarAtNameOfTab(bool star);
     void dragEnterEvent(QDragEnterEvent *e) override;
     void dropEvent(QDropEvent *e) override;
+
+protected:
+    void closeEvent(QCloseEvent *event) override;
 
 public slots:
 
