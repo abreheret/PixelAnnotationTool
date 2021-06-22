@@ -55,7 +55,7 @@ QColor readableColor(const QColor & color)
 	if ((r*0.299 + g*0.587 + b*0.114) > 150)
 		return QColor(0, 0, 0);
 
-	return QColor(255, 255, 255);
+	return {255, 255, 255};
 
 }
 QColor invColor(const QColor& color) {
@@ -100,7 +100,7 @@ cv::Mat convertMat32StoRGBC3(const cv::Mat& mat) {
 	uchar label;
 	for (int r = 0; r < dst.rows; ++r) {
 		const int* ptr = mat.ptr<int>(r);
-		uchar* ptr_dst = dst.ptr<uchar>(r);
+		auto* ptr_dst = dst.ptr<uchar>(r);
 		for (int c = 0; c < dst.cols; ++c) {
 			label = ptr[c];
 			pix = &ptr_dst[c*3];
@@ -124,7 +124,7 @@ QImage watershed(const QImage& qimage, const QImage & qmarkers_mask) {
 	cv::Mat markers = cv::Mat::zeros(markers_mask.size(), CV_32S);
 	for (int y = 0; y < markers_mask.rows; y++) {
 		int* mark = markers.ptr<int>(y);
-		cv::Vec3b* mask = markers_mask.ptr<cv::Vec3b>(y);
+		auto* mask = markers_mask.ptr<cv::Vec3b>(y);
 		for (int x = 0; x < markers_mask.cols; x++) {
 			mark[x] = mask[x][0];
 		}
@@ -163,7 +163,7 @@ QImage removeBorder(const QImage & mask_id, const Id2Labels & labels, cv::Size w
 				}
 				int id_max = 0;
 				int id_resul = mapk.begin()->first;
-				std::map<int, int>::iterator it = mapk.begin();
+				auto it = mapk.begin();
 				while (it != mapk.end()) {
 					if (it->first != 255) {
 						if (it->second > id_max) {

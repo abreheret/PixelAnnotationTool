@@ -9,7 +9,7 @@ PixelAnnotationTool
 
 
 Software that allows you to manually and quickly annotate images in directories.
-The method is pseudo manual because it uses the algorithm [watershed marked](http://docs.opencv.org/3.1.0/d7/d1b/group__imgproc__misc.html#ga3267243e4d3f95165d55a618c65ac6e1) of OpenCV. The general idea is to manually provide the marker with brushes and then to launch the algorithm. If at first pass the segmentation needs to be corrected, the user can refine the markers by drawing new ones on the erroneous areas (as shown on video below).
+The method is pseudo manual because it uses the algorithm [watershed marked](https://docs.opencv.org/4.5.2/d3/db4/tutorial_py_watershed.html) of OpenCV. The general idea is to manually provide the marker with brushes and then to launch the algorithm. If at first pass the segmentation needs to be corrected, the user can refine the markers by drawing new ones on the erroneous areas (as shown on video below).
 
 [![gif_file](giphy.gif)](https://youtu.be/wxi2dInWDnI)
 
@@ -22,9 +22,9 @@ Little example from an user ([tenjumh](https://github.com/tenjumh/Pixel-Annotati
 ----------
 
 ### Building Dependencies :
-* [Qt](https://www.qt.io/download-open-source/)  >= 5.x
-* [CMake](https://cmake.org/download/) >= 2.8.x 
-* [OpenCV](http://opencv.org/releases.html) >= 2.4.x 
+* [Qt](https://www.qt.io/offline-installers)  >= 5.12.10
+* [CMake](https://cmake.org/download/) >= 3.2.x 
+* [OpenCV](https://opencv.org/releases/) >= 3.4.x 
 * For Windows Compiler : Works under Visual Studio >= 2015
 
 How to build go to [here](scripts_to_build)

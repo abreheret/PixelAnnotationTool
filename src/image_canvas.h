@@ -15,8 +15,8 @@ class ImageCanvas : public QLabel {
 
 public:
 
-	ImageCanvas(MainWindow *ui);
-    ~ImageCanvas();
+	explicit ImageCanvas(MainWindow *ui);
+    ~ImageCanvas() override;
 
 	void setId(int id);
 	void setMask(const ImageMask & mask);
