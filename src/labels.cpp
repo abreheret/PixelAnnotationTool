@@ -26,6 +26,12 @@ LabelInfo::LabelInfo(QString name, QString categorie, int id, int id_categorie, 
 	item = NULL;
 }
 
+LabelInfo::~LabelInfo() {
+
+    delete item;
+    delete shortcut;
+}
+
 void LabelInfo::read(const QJsonObject &json) {
 	id = json["id"].toInt();
 	name = json["name"].toString();

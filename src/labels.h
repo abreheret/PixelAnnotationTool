@@ -16,6 +16,8 @@ public:
 	LabelInfo(QString name, QString categorie, int id, int id_categorie, QColor color);
 	void read(const QJsonObject &json);
 	void write(QJsonObject &json) const;
+
+    ~LabelInfo();
 };
 
 class Name2Labels : public QMap<QString, LabelInfo> {
