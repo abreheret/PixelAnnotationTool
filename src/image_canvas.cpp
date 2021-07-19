@@ -120,7 +120,7 @@ void ImageCanvas::adjustScrollBars()
 
     if(_scroll_parent->verticalScrollBar())
     {
-        auto posHeightRel = float_t (mPos.y()/imSize.height());  //Relation Mauspos to Height of Image
+        float_t posHeightRel = float_t (mPos.y()/imSize.height());  //Relation Mauspos to Height of Image
 
         //set vertical scrollbar to mouse position
         QScrollBar * verticalScroll = _scroll_parent->verticalScrollBar();
@@ -131,7 +131,7 @@ void ImageCanvas::adjustScrollBars()
 
     if(_scroll_parent->horizontalScrollBar())
     {
-        auto posWidthRel = float_t (mPos.x()/imSize.width()); ////Relation Mauspos to Width of Image
+        float_t posWidthRel = float_t (mPos.x()/imSize.width()); ////Relation Mauspos to Width of Image
 
         //set horizontal scrollbar to mouse position
         QScrollBar * horizontalScroll = _scroll_parent->horizontalScrollBar();
