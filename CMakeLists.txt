@@ -72,6 +72,8 @@ add_executable(PixelAnnotationTool MACOSX_BUNDLE WIN32
 	src/image_canvas.h
 	src/label_widget.cpp 
 	src/label_widget.h 
+        src/slic_parameter.cpp
+        src/slic_parameter.h
 	src/main.cpp 
 	${UI_TEST_HDRS})
 target_link_libraries(PixelAnnotationTool Qt5::Gui Qt5::Widgets ${OpenCV_LIBS})	

@@ -23,6 +23,7 @@
 #include "image_canvas.h"
 #include "label_widget.h"
 #include "labels.h"
+#include "slic_parameter.h"
 
 class MainWindow : public QMainWindow, public Ui::MainWindow {
     Q_OBJECT
@@ -62,6 +63,8 @@ public:
     QAction        * next_file_action;
 	QAction        * previous_file_action;
 	QString          curr_open_dir;
+    SlicParameter    slic_params  ;
+
 public:
 	QString currentDir() const;
 	QString currentFile() const;
@@ -71,6 +74,7 @@ public:
     void setStarAtNameOfTab(bool star);
     void dragEnterEvent(QDragEnterEvent *e) override;
     void dropEvent(QDropEvent *e) override;
+    void runSlic(ImageCanvas * ic);
 
 public slots:
 
@@ -95,6 +99,7 @@ public slots:
     void treeWidgetClicked();
     void onLabelShortcut(int row);
     void update();
+    void runSlic();
 };
 
 #endif

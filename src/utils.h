@@ -2,10 +2,15 @@
 #define PIX_ANN_UTILS_H
 
 #include "labels.h"
+#include "image_canvas.h"
+#include "slic_parameter.h"
 
 #include <opencv2/imgproc/imgproc.hpp>
 #include <opencv2/highgui/highgui.hpp>
+#include <opencv2/ximgproc/slic.hpp>
 #include <QImage>
+
+
 
 cv::Mat qImage2Mat(QImage const& src);
 QImage mat2QImage(cv::Mat const& src);
@@ -21,5 +26,7 @@ QImage removeBorder(const QImage & mask_id, const Id2Labels & labels, cv::Size w
 bool isFullZero(const QImage& image);
 int rgbToInt(uchar r, uchar g, uchar b);
 void intToRgb(int value, uchar &r, uchar &g, uchar &b);
+
+QImage slic(const QImage& qimage, const SlicParameter * sp);
 
 #endif

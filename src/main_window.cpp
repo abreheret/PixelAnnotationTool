@@ -64,6 +64,7 @@ MainWindow::MainWindow(QWidget *parent, Qt::WindowFlags flags)
 	tabWidget->clear();
 
 	connect(button_watershed      , SIGNAL(released())                        , this, SLOT(runWatershed()  ));
+    connect(button_slic           , SIGNAL(released())                        , this, SLOT(runSlic()       ));
     connect(swap_action           , SIGNAL(triggered())                       , this, SLOT(swapView()      ));
 	connect(actionOpen_config_file, SIGNAL(triggered())                       , this, SLOT(loadConfigFile()));
 	connect(actionSave_config_file, SIGNAL(triggered())                       , this, SLOT(saveConfigFile()));
@@ -225,12 +226,15 @@ void MainWindow::changeLabel(QListWidgetItem* current, QListWidgetItem* previous
 
 void MainWindow::runWatershed(ImageCanvas * ic) {
     QImage iwatershed = watershed(ic->getImage(), ic->getMask().id);
+
     if (!checkbox_border_ws->isChecked()) {
         iwatershed = removeBorder(iwatershed, id_labels);
     }
-	ic->setWatershedMask(iwatershed);
+
+    ic->setWatershedMask(iwatershed);
+
 	checkbox_watershed_mask->setCheckState(Qt::CheckState::Checked);
-	ic->update();
+    ic->update();
 }
 
 void MainWindow::runWatershed() {
@@ -266,6 +270,13 @@ void MainWindow::updateConnect(const ImageCanvas * ic) {
 	connect(redo_action, SIGNAL(triggered()), ic, SLOT(redo()));
 	connect(save_action, SIGNAL(triggered()), ic, SLOT(saveMask()));
     connect(checkbox_border_ws, SIGNAL(clicked()), this, SLOT(runWatershed()));
+    connect(spinbox_slic_algo, SIGNAL(currentIndexChanged(int)), &slic_params, SLOT(algorithmChanged(int)));
+    connect(spinbox_slic_region_size, SIGNAL(valueChanged(int)), &slic_params, SLOT(regionSizeChanged(int)));
+    connect(spinbox_slic_ruler, SIGNAL(valueChanged(double)), &slic_params, SLOT(rulerChanged(double)));
+    connect(spinbox_slic_connectivity, SIGNAL(valueChanged(int)), &slic_params, SLOT(connectivityChanged(int)));
+    connect(spinbox_slic_iterations, SIGNAL(valueChanged(int)), &slic_params, SLOT(iterationsChanged(int)));
+    connect(spinbox_slic_display_mode, SIGNAL(valueChanged(int)), &slic_params, SLOT(displayModeChanged(int)));
+
 }
 
 void MainWindow::allDisconnnect(const ImageCanvas * ic) {
@@ -280,6 +291,12 @@ void MainWindow::allDisconnnect(const ImageCanvas * ic) {
     disconnect(redo_action, SIGNAL(triggered()), ic, SLOT(redo()));
     disconnect(save_action, SIGNAL(triggered()), ic, SLOT(saveMask()));
     disconnect(checkbox_border_ws, SIGNAL(clicked()), this, SLOT(runWatershed()));
+    disconnect(spinbox_slic_algo, SIGNAL(currentIndexChanged(int)), &slic_params, SLOT(algorithmChanged(int)));
+    disconnect(spinbox_slic_region_size, SIGNAL(valueChanged(int)), &slic_params, SLOT(regionSizeChanged(int)));
+    disconnect(spinbox_slic_ruler, SIGNAL(valueChanged(double)), &slic_params, SLOT(rulerChanged(double)));
+    disconnect(spinbox_slic_connectivity, SIGNAL(valueChanged(int)), &slic_params, SLOT(connectivityChanged(int)));
+    disconnect(spinbox_slic_iterations, SIGNAL(valueChanged(int)), &slic_params, SLOT(iterationsChanged(int)));
+    disconnect(spinbox_slic_display_mode, SIGNAL(valueChanged(int)), &slic_params, SLOT(displayModeChanged(int)));
 }
 
 ImageCanvas * MainWindow::newImageCanvas() {
@@ -323,9 +340,9 @@ int MainWindow::getImageCanvas(QString name, ImageCanvas * ic) {
 QString MainWindow::currentDir() const {
 	QTreeWidgetItem *current = tree_widget_img->currentItem();
 	if (!current || !current->parent())
-		return "";
+        return "";
 
-	return current->parent()->text(0);
+    return current->parent()->text(0);
 }
 
 QString MainWindow::currentFile() const {
@@ -354,6 +371,7 @@ void MainWindow::on_tree_widget_img_currentItemChanged(QTreeWidgetItem *current,
 
 void MainWindow::on_actionOpenDir_triggered() {
 	statusBar()->clearMessage();
+    curr_open_dir = "/home/rome/Dokumente/Evaluation-Annotier-Tools/freiburg_forest_data_raw/freiburg_forest_raw/"; //RA added
 	QString openedDir = QFileDialog::getExistingDirectory(this, "Choose a directory to be read in", curr_open_dir);
 	if (openedDir.isEmpty())
 		return;
@@ -505,4 +523,17 @@ void MainWindow::onLabelShortcut(int row) {
         list_label->setCurrentRow(row, QItemSelectionModel::ClearAndSelect);
         update();
     }
+}
+
+void MainWindow::runSlic(ImageCanvas * ic){
+    QImage iSlic = slic(ic->getImage(), &slic_params);
+
+    ic->setWatershedMask(iSlic);
+    ic->update();
+}
+
+void MainWindow::runSlic() {
+    ImageCanvas * ic = image_canvas;
+    if (ic != NULL)
+        runSlic(ic);
 }

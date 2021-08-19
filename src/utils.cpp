@@ -1,14 +1,25 @@
 #include "utils.h"
+#include <iostream>
 
 //-------------------------------------------------------------------------------------------------------------
 QImage mat2QImage(cv::Mat const& src) {
 	cv::Mat temp; // make the same cv::Mat
-	cv::cvtColor(src, temp, cv::COLOR_BGR2RGB); // cvtColor Makes a copt, that what i need
+    cv::cvtColor(src, temp, cv::COLOR_BGR2RGB); // cvtColor Makes a copt, that what i need
 	QImage dest((const uchar *)temp.data, temp.cols, temp.rows,int(temp.step), QImage::Format_RGB888);
 	dest.bits(); // enforce deep copy, see documentation 
 				 // of QImage::QImage ( const uchar * data, int width, int height, Format format )
 	return dest;
 }
+
+QImage mat2QImageGray(cv::Mat const& src) {
+    cv::Mat temp; // make the same cv::Mat
+    cv::cvtColor(src, temp, cv::COLOR_GRAY2RGB); // cvtColor Makes a copt, that what i need
+    QImage dest((const uchar *)temp.data, temp.cols, temp.rows,int(temp.step), QImage::Format_RGB888);
+    dest.bits(); // enforce deep copy, see documentation
+                 // of QImage::QImage ( const uchar * data, int width, int height, Format format )
+    return dest;
+}
+
 cv::Mat qImage2Mat(QImage const& src) {
 	cv::Mat tmp(src.height(), src.width(), CV_8UC3, (uchar*)src.bits(), src.bytesPerLine());
 	cv::Mat result; // deep copy just in case (my lack of knowledge with open cv)
@@ -131,7 +142,7 @@ QImage watershed(const QImage& qimage, const QImage & qmarkers_mask) {
 	}
 	cv::watershed(image, markers);
 	cv::Mat new_mask = convertMat32StoRGBC3(markers);
-	return mat2QImage(new_mask);
+    return mat2QImage(new_mask);
 }
 
 QImage removeBorder(const QImage & mask_id, const Id2Labels & labels, cv::Size win_size) {
@@ -193,3 +204,74 @@ bool isFullZero(const QImage& image) {
 	return true;
 }
 //-------------------------------------------------------------------------------------------------------------
+
+QImage slic(const QImage& qimage, const SlicParameter * sp)
+{
+    cv::Mat image = qImage2Mat(qimage);
+
+    cv::Mat converted;
+    cv::cvtColor(image, converted, cv::COLOR_BGR2Lab);
+    cv::Ptr<cv::ximgproc::SuperpixelSLIC> slic_ptr = cv::ximgproc::createSuperpixelSLIC(converted,  sp->algorithmSet(), sp->regionSizeSet(), sp->rulerSet());
+
+    slic_ptr->iterate(sp->iterationsSet());
+    slic_ptr->enforceLabelConnectivity(sp->connectivitySet());
+
+    static const char* window_name = "SLIC Superpixels";
+    cv::namedWindow(window_name, 0);
+    cv::imshow(window_name, converted);
+
+    cv::Mat mask, result;
+    slic_ptr->getLabelContourMask(mask,true);
+
+    image.setTo(cv::Scalar(255,0,0), mask);
+    //cv::imshow(window_name, image);
+
+    result=image;
+
+//    static const char* window_name = "SLIC Superpixels";
+//    cv::namedWindow(window_name, 0);
+
+    cv::Mat labels;
+    switch (sp->displayModeSet())
+            {
+            case 0: //superpixel contours
+                result.setTo(cv::Scalar(255, 0, 0), mask);
+                std::cout << "empty:" << result.empty() << "\t depth:" << result.depth();
+                // cv::imshow(window_name, result);
+                break;
+            case 1: //mask
+                //cv::imshow(window_name, mask);
+                break;
+            case 2: //labels array
+            {
+                // use the last x bit to determine the color. Note that this does not
+                // guarantee that 2 neighboring superpixels have different colors.
+                // retrieve the segmentation result
+//                cv::Mat labels;
+                slic_ptr->getLabels(labels);
+//                std::cout << labels;
+                const int num_label_bits = 2;
+                labels &= (1 << num_label_bits) - 1;
+                labels *= 1 << (16 - num_label_bits);
+                std::cout << "BEFORE\t" << labels.type();
+                labels.convertTo(labels, CV_32SC1, 1.0/255.0);
+                std::cout << "After CONVERTING: " << labels.type() << "\t" << labels.depth() << "\t" << std::endl;
+                //cv::imshow(window_name, labels);
+                break;
+            }
+            }
+    cv::Mat return_mat = mask;
+    cv::imshow(window_name, return_mat);
+
+    QImage dest((const uchar *)return_mat.data, return_mat.cols, return_mat.rows,int(return_mat.step), QImage::Format_RGB888);
+    dest.bits(); // enforce deep copy, see documentation
+
+    return dest;
+    //    cv::Mat gauimg = image;
+    //    cv::Size kSize;
+    //    kSize.height = 3;
+    //    kSize.width = 3;
+    //    cv::GaussianBlur(image, gauimg, kSize, 0.5);
+    //    cv::Mat labimg;
+    //    cv::cvtColor(gauimg, labimg, cv::COLOR_BGR2Lab);
+}
