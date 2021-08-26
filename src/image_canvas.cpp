@@ -15,6 +15,7 @@ ImageCanvas::ImageCanvas(MainWindow *ui) :
     _scale = _ui->spinbox_scale->value();
     _alpha = _ui->spinbox_alpha->value();
     _pen_size = _ui->spinbox_pen_size->value();
+    updateSlicParams();
     _initPixmap();
     setScaledContents(true);
     setMouseTracking(true);
@@ -374,4 +375,19 @@ void ImageCanvas::redo() {
         _ui->redo_action->setEnabled(false);
     }
     _ui->undo_action->setEnabled(true);
+}
+
+void ImageCanvas::setSlicMask (QImage rootImage ,QImage slicImage)
+{
+    _watershed.id = rootImage;
+    _watershed.color = slicImage;
+}
+
+void ImageCanvas::updateSlicParams (){
+     slic_params.algorithmChanged(      _ui->spinbox_slic_algo->currentIndex());
+     slic_params.regionSizeChanged(     _ui->spinbox_slic_region_size->value());
+     slic_params.rulerChanged(          _ui->spinbox_slic_ruler->value());
+     slic_params.connectivityChanged(   _ui->spinbox_slic_connectivity->value());
+     slic_params.iterationsChanged(     _ui->spinbox_slic_iterations->value());
+     slic_params.displayModeChanged(    _ui->spinbox_slic_display_mode->value());
 }

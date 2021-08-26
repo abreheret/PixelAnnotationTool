@@ -23,7 +23,7 @@
 #include "image_canvas.h"
 #include "label_widget.h"
 #include "labels.h"
-#include "slic_parameter.h"
+
 
 class MainWindow : public QMainWindow, public Ui::MainWindow {
     Q_OBJECT
@@ -44,6 +44,7 @@ private:
     ImageMask _tmp;
     QVector<QShortcut*> _shortcuts;
     bool _isLoadingNewLabels;
+    void updateSlicParamsView(ImageCanvas *ic);
 
 public:
 	ImageCanvas   *  image_canvas ;
@@ -63,7 +64,6 @@ public:
     QAction        * next_file_action;
 	QAction        * previous_file_action;
 	QString          curr_open_dir;
-    SlicParameter    slic_params  ;
 
 public:
 	QString currentDir() const;

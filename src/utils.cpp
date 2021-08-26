@@ -218,26 +218,22 @@ QImage slic(const QImage& qimage, const SlicParameter * sp)
 
     static const char* window_name = "SLIC Superpixels";
     cv::namedWindow(window_name, 0);
-    cv::imshow(window_name, converted);
 
     cv::Mat mask, result;
     slic_ptr->getLabelContourMask(mask,true);
 
     image.setTo(cv::Scalar(255,0,0), mask);
-    //cv::imshow(window_name, image);
 
     result=image;
 
-//    static const char* window_name = "SLIC Superpixels";
-//    cv::namedWindow(window_name, 0);
-
     cv::Mat labels;
+    cv::Mat return_mat;
     switch (sp->displayModeSet())
             {
             case 0: //superpixel contours
-                result.setTo(cv::Scalar(255, 0, 0), mask);
-                std::cout << "empty:" << result.empty() << "\t depth:" << result.depth();
-                // cv::imshow(window_name, result);
+                result.setTo(cv::Scalar(0, 0, 255), mask);
+
+                return_mat = result;
                 break;
             case 1: //mask
                 //cv::imshow(window_name, mask);
@@ -249,29 +245,25 @@ QImage slic(const QImage& qimage, const SlicParameter * sp)
                 // retrieve the segmentation result
 //                cv::Mat labels;
                 slic_ptr->getLabels(labels);
-//                std::cout << labels;
+                //std::cout <<"BEFORE LABELS:" << labels;
                 const int num_label_bits = 2;
                 labels &= (1 << num_label_bits) - 1;
                 labels *= 1 << (16 - num_label_bits);
-                std::cout << "BEFORE\t" << labels.type();
-                labels.convertTo(labels, CV_32SC1, 1.0/255.0);
-                std::cout << "After CONVERTING: " << labels.type() << "\t" << labels.depth() << "\t" << std::endl;
-                //cv::imshow(window_name, labels);
+                labels.convertTo(labels, CV_8UC3, 1.0/(255.0));
+
+                cv::cvtColor(labels, return_mat, cv::COLOR_GRAY2RGB,3);
+
+                //std::cout <<"AFTER LABELS:" << return_mat;
+                return_mat = labels;
                 break;
             }
             }
-    cv::Mat return_mat = mask;
+
     cv::imshow(window_name, return_mat);
+    std::cout << "Algo: " << sp->algorithmSet() << "\t Region Size: " << sp->regionSizeSet() << "\t Ruler: " << sp->rulerSet() << "\t Connectivity: " << sp->connectivitySet() << "\t Iter: " << sp->iterationsSet() << std::endl;
 
     QImage dest((const uchar *)return_mat.data, return_mat.cols, return_mat.rows,int(return_mat.step), QImage::Format_RGB888);
     dest.bits(); // enforce deep copy, see documentation
 
     return dest;
-    //    cv::Mat gauimg = image;
-    //    cv::Size kSize;
-    //    kSize.height = 3;
-    //    kSize.width = 3;
-    //    cv::GaussianBlur(image, gauimg, kSize, 0.5);
-    //    cv::Mat labimg;
-    //    cv::cvtColor(gauimg, labimg, cv::COLOR_BGR2Lab);
 }

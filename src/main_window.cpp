@@ -19,6 +19,8 @@
 
 #include "about_dialog.h"
 
+#include <iostream>
+
 MainWindow::MainWindow(QWidget *parent, Qt::WindowFlags flags)
 	: QMainWindow(parent, flags)
 {
@@ -270,13 +272,12 @@ void MainWindow::updateConnect(const ImageCanvas * ic) {
 	connect(redo_action, SIGNAL(triggered()), ic, SLOT(redo()));
 	connect(save_action, SIGNAL(triggered()), ic, SLOT(saveMask()));
     connect(checkbox_border_ws, SIGNAL(clicked()), this, SLOT(runWatershed()));
-    connect(spinbox_slic_algo, SIGNAL(currentIndexChanged(int)), &slic_params, SLOT(algorithmChanged(int)));
-    connect(spinbox_slic_region_size, SIGNAL(valueChanged(int)), &slic_params, SLOT(regionSizeChanged(int)));
-    connect(spinbox_slic_ruler, SIGNAL(valueChanged(double)), &slic_params, SLOT(rulerChanged(double)));
-    connect(spinbox_slic_connectivity, SIGNAL(valueChanged(int)), &slic_params, SLOT(connectivityChanged(int)));
-    connect(spinbox_slic_iterations, SIGNAL(valueChanged(int)), &slic_params, SLOT(iterationsChanged(int)));
-    connect(spinbox_slic_display_mode, SIGNAL(valueChanged(int)), &slic_params, SLOT(displayModeChanged(int)));
-
+    connect(spinbox_slic_algo, SIGNAL(currentIndexChanged(int)),    &ic->slic_params, SLOT(algorithmChanged(int)));
+    connect(spinbox_slic_region_size, SIGNAL(valueChanged(int)),    &ic->slic_params, SLOT(regionSizeChanged(int)));
+    connect(spinbox_slic_ruler, SIGNAL(valueChanged(double)),       &ic->slic_params, SLOT(rulerChanged(double)));
+    connect(spinbox_slic_connectivity, SIGNAL(valueChanged(int)),   &ic->slic_params, SLOT(connectivityChanged(int)));
+    connect(spinbox_slic_iterations, SIGNAL(valueChanged(int)),     &ic->slic_params, SLOT(iterationsChanged(int)));
+    connect(spinbox_slic_display_mode, SIGNAL(valueChanged(int)),   &ic->slic_params, SLOT(displayModeChanged(int)));
 }
 
 void MainWindow::allDisconnnect(const ImageCanvas * ic) {
@@ -291,12 +292,12 @@ void MainWindow::allDisconnnect(const ImageCanvas * ic) {
     disconnect(redo_action, SIGNAL(triggered()), ic, SLOT(redo()));
     disconnect(save_action, SIGNAL(triggered()), ic, SLOT(saveMask()));
     disconnect(checkbox_border_ws, SIGNAL(clicked()), this, SLOT(runWatershed()));
-    disconnect(spinbox_slic_algo, SIGNAL(currentIndexChanged(int)), &slic_params, SLOT(algorithmChanged(int)));
-    disconnect(spinbox_slic_region_size, SIGNAL(valueChanged(int)), &slic_params, SLOT(regionSizeChanged(int)));
-    disconnect(spinbox_slic_ruler, SIGNAL(valueChanged(double)), &slic_params, SLOT(rulerChanged(double)));
-    disconnect(spinbox_slic_connectivity, SIGNAL(valueChanged(int)), &slic_params, SLOT(connectivityChanged(int)));
-    disconnect(spinbox_slic_iterations, SIGNAL(valueChanged(int)), &slic_params, SLOT(iterationsChanged(int)));
-    disconnect(spinbox_slic_display_mode, SIGNAL(valueChanged(int)), &slic_params, SLOT(displayModeChanged(int)));
+    disconnect(spinbox_slic_algo, SIGNAL(currentIndexChanged(int)),  &ic->slic_params, SLOT(algorithmChanged(int)));
+    disconnect(spinbox_slic_region_size, SIGNAL(valueChanged(int)),  &ic->slic_params, SLOT(regionSizeChanged(int)));
+    disconnect(spinbox_slic_ruler, SIGNAL(valueChanged(double)),     &ic->slic_params, SLOT(rulerChanged(double)));
+    disconnect(spinbox_slic_connectivity, SIGNAL(valueChanged(int)), &ic->slic_params, SLOT(connectivityChanged(int)));
+    disconnect(spinbox_slic_iterations, SIGNAL(valueChanged(int)),   &ic->slic_params, SLOT(iterationsChanged(int)));
+    disconnect(spinbox_slic_display_mode, SIGNAL(valueChanged(int)), &ic->slic_params, SLOT(displayModeChanged(int)));
 }
 
 ImageCanvas * MainWindow::newImageCanvas() {
@@ -319,6 +320,7 @@ void MainWindow::updateConnect(int index) {
 ImageCanvas * MainWindow::getImageCanvas(int index) {
     QScrollArea * scroll_area = static_cast<QScrollArea *>(tabWidget->widget(index));
     ImageCanvas * ic = static_cast<ImageCanvas*>(scroll_area->widget());
+    updateSlicParamsView(ic);
     return ic;
 }
 
@@ -362,6 +364,7 @@ void MainWindow::treeWidgetClicked() {
     allDisconnnect(image_canvas);
     int index = getImageCanvas(iFile, image_canvas);
     updateConnect(image_canvas);
+    std::cout << "Algo: " << image_canvas->slic_params.algorithmSet() << "\t Region Size: " << image_canvas->slic_params.regionSizeSet() << "\t Ruler: " << image_canvas->slic_params.rulerSet() << "\t Connectivity: " << image_canvas->slic_params.connectivitySet() << "\t Iter: " << image_canvas->slic_params.iterationsSet() << std::endl;
     tabWidget->setCurrentIndex(index);
 }
 
@@ -370,8 +373,8 @@ void MainWindow::on_tree_widget_img_currentItemChanged(QTreeWidgetItem *current,
 }
 
 void MainWindow::on_actionOpenDir_triggered() {
-	statusBar()->clearMessage();
-    curr_open_dir = "/home/rome/Dokumente/Evaluation-Annotier-Tools/freiburg_forest_data_raw/freiburg_forest_raw/"; //RA added
+    statusBar()->clearMessage();
+    curr_open_dir = "/home/rome/Dokumente/Evaluation-Annotier-Tools/freiburg_forest_data_raw/freiburg_forest_raw/"; //RA added ///TODO: Später wieder entfernen
 	QString openedDir = QFileDialog::getExistingDirectory(this, "Choose a directory to be read in", curr_open_dir);
 	if (openedDir.isEmpty())
 		return;
@@ -526,9 +529,10 @@ void MainWindow::onLabelShortcut(int row) {
 }
 
 void MainWindow::runSlic(ImageCanvas * ic){
-    QImage iSlic = slic(ic->getImage(), &slic_params);
+    QImage iSlic = slic(ic->getImage(), &ic->slic_params);
 
-    ic->setWatershedMask(iSlic);
+
+    ic->setSlicMask(ic->getImage(),iSlic);
     ic->update();
 }
 
@@ -536,4 +540,12 @@ void MainWindow::runSlic() {
     ImageCanvas * ic = image_canvas;
     if (ic != NULL)
         runSlic(ic);
+}
+
+void MainWindow::updateSlicParamsView(ImageCanvas *ic){
+    spinbox_slic_algo->setCurrentIndex(     ic->slic_params.algorithmSet() - 100);
+    spinbox_slic_region_size->setValue(     ic->slic_params.regionSizeSet()     );
+    spinbox_slic_ruler->setValue(           ic->slic_params.rulerSet()          );
+    spinbox_slic_connectivity->setValue(    ic->slic_params.connectivitySet()   );
+    spinbox_slic_iterations->setValue(      ic->slic_params.iterationsSet()     );
 }

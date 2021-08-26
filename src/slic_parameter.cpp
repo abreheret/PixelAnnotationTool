@@ -4,10 +4,10 @@
 SlicParameter::SlicParameter()
     : QObject(),
       _algo(cv::ximgproc::SLIC),
-     _region_size(200),
-     _ruler(100.0),
-     _connectivity(100),
-     _iterations(3),
+     _region_size(100),
+     _ruler(25.0),
+     _connectivity(50),
+     _iterations(8),
      _display_mode(0)
 {
 

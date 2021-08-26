@@ -3,6 +3,7 @@
 
 #include "utils.h"
 #include "image_mask.h"
+#include "slic_parameter.h"
 
 #include <QLabel>
 #include <QPen>
@@ -27,11 +28,15 @@ public:
 
 
     void setWatershedMask(QImage watershed);
+    void setSlicMask (QImage rootImage, QImage slicImage);
     void refresh();
     void updateMaskColor(const Id2Labels & labels) { _mask.updateColor(labels); }
     void loadImage(const QString &file);
     QScrollArea * getScrollParent() const { return _scroll_parent; }
     bool isNotSaved() const { return _undo_list.size() > 1; }
+
+    SlicParameter    slic_params       ;
+    void updateSlicParams();
 
 protected:
     void mouseMoveEvent(QMouseEvent * event) override;

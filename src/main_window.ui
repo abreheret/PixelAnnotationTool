@@ -372,7 +372,7 @@
             <number>5</number>
            </property>
            <property name="value">
-            <number>200</number>
+            <number>50</number>
            </property>
           </widget>
          </item>
@@ -399,13 +399,13 @@
          <item>
           <widget class="QDoubleSpinBox" name="spinbox_slic_ruler">
            <property name="maximum">
-            <double>200.000000000000000</double>
+            <double>100.000000000000000</double>
            </property>
            <property name="singleStep">
             <double>1.000000000000000</double>
            </property>
            <property name="value">
-            <double>100.000000000000000</double>
+            <double>20.000000000000000</double>
            </property>
           </widget>
          </item>
@@ -426,13 +426,13 @@
             <number>1</number>
            </property>
            <property name="maximum">
-            <number>1000</number>
+            <number>100</number>
            </property>
            <property name="singleStep">
             <number>5</number>
            </property>
            <property name="value">
-            <number>100</number>
+            <number>30</number>
            </property>
           </widget>
          </item>
@@ -459,7 +459,7 @@
             <number>1</number>
            </property>
            <property name="value">
-            <number>3</number>
+            <number>8</number>
            </property>
           </widget>
          </item>
