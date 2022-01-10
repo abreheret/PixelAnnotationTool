@@ -17,8 +17,8 @@ struct ImageMask {
 	ImageMask(const QString &file, Id2Labels id_labels);
 	ImageMask(QSize s);
 
-	void drawFillCircle(int x, int y, int pen_size, ColorMask cm);
-	void drawPixel(int x, int y, ColorMask cm);
+    void drawLine(QPoint p1, QPoint p2, int pen_size, ColorMask cm);
+    void drawFillCircle(QPoint point, int pen_size, ColorMask cm);
 	void updateColor(const Id2Labels & labels);
 	void exchangeLabel(int x, int y, const Id2Labels & id_labels, ColorMask cm);
 };
