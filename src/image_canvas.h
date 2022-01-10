@@ -52,8 +52,8 @@ public slots :
 private:
 	MainWindow *_ui;
 	
-	void _initPixmap();
-	void _drawFillCircle(QMouseEvent * e);
+    void _initPixmap();
+    QPoint _get_pen_pose(QMouseEvent * e);
 
 	QScrollArea     *_scroll_parent    ;
 	double           _scale            ;
@@ -71,7 +71,7 @@ private:
 	ColorMask        _color            ;
 	int              _pen_size         ;
 	bool             _button_is_pressed;
-
+    QPoint          _prev_point        ;
 };
 
 

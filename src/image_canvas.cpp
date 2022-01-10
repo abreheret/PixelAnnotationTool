@@ -138,12 +138,22 @@ void ImageCanvas::paintEvent(QPaintEvent *event) {
 	}
 }
 
+QPoint ImageCanvas::_get_pen_pose(QMouseEvent * e) {
+    int x = e->x() / _scale;
+    int y = e->y() / _scale;
+    return QPoint(x,y);
+}
+
 void ImageCanvas::mouseMoveEvent(QMouseEvent * e) {
 	_mouse_pos.setX(e->x());
 	_mouse_pos.setY(e->y());
 
-	if (_button_is_pressed) 
-		_drawFillCircle(e);
+    if (_button_is_pressed) {
+        QPoint cur_point = _get_pen_pose(e);
+        _mask.drawLine(_prev_point, cur_point, _pen_size, _color);
+        _prev_point = cur_point;
+        update();
+    }
 
 	update();
 }
@@ -151,7 +161,6 @@ void ImageCanvas::mouseMoveEvent(QMouseEvent * e) {
 void ImageCanvas::setSizePen(int pen_size) {
 	_pen_size = pen_size;
 }
-
 
 void ImageCanvas::mouseReleaseEvent(QMouseEvent * e) {
 	if(e->button() == Qt::LeftButton) {
@@ -212,23 +221,12 @@ void ImageCanvas::mouseReleaseEvent(QMouseEvent * e) {
 
 void ImageCanvas::mousePressEvent(QMouseEvent * e) {
 	setFocus();
-	if (e->button() == Qt::LeftButton) {
+    if (e->button() == Qt::LeftButton) {
+        _prev_point = _get_pen_pose(e);
 		_button_is_pressed = true;
-		_drawFillCircle(e);
+        _mask.drawFillCircle(_get_pen_pose(e), _pen_size, _color);
+        update();
 	}
-}
-
-void ImageCanvas::_drawFillCircle(QMouseEvent * e) {
-	if (_pen_size > 0) {
-		int x = e->x() / _scale - _pen_size / 2;
-		int y = e->y() / _scale - _pen_size / 2;
-		_mask.drawFillCircle(x, y, _pen_size, _color);
-	} else {
-		int x = (e->x()+0.5) / _scale ;
-		int y = (e->y()+0.5) / _scale ;
-		_mask.drawPixel(x, y, _color);
-	}
-	update();
 }
 
 void ImageCanvas::clearMask() {
