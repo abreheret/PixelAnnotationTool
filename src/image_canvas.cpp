@@ -154,8 +154,6 @@ void ImageCanvas::mouseMoveEvent(QMouseEvent * e) {
         _prev_point = cur_point;
         update();
     }
-
-	update();
 }
 
 void ImageCanvas::setSizePen(int pen_size) {
