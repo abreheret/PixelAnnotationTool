@@ -71,6 +71,10 @@ private:
 	ColorMask        _color            ;
 	int              _pen_size         ;
 	bool             _button_is_pressed;
+	QSize _act_im_size;
+
+private slots:
+	void adjustScrollBars();
 
 };
 
