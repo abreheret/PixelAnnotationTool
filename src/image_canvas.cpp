@@ -99,7 +99,45 @@ void ImageCanvas::saveMask() {
 void ImageCanvas::scaleChanged(double scale) {
 	_scale  = scale ;
 	resize(_scale * _image.size());
+	
+	adjustScrollBars();
 	repaint();
+}
+
+void ImageCanvas::adjustScrollBars()
+{	// from : https://github.com/BestVanRome
+	//   x ------>
+	//     _________
+	// y  |.........|
+	// |  |.........|
+	// |  |.........|
+	// |  |.........|
+	// v  |.........|
+	//     ---------
+	QPointF mPos = _mouse_pos;
+	QSize imSize = _act_im_size;
+
+
+	if (_scroll_parent->verticalScrollBar())
+	{
+		auto posHeightRel = (mPos.y() / imSize.height());  //Relation Mauspos to Height of Image
+
+		//set vertical scrollbar to mouse position
+		QScrollBar* verticalScroll = _scroll_parent->verticalScrollBar();
+		double vertScrollSpace = verticalScroll->maximum() - verticalScroll->minimum(); // general calculating of moving-space
+		verticalScroll->setValue(vertScrollSpace * posHeightRel);
+		//alternative: QWheelEvent::angleDelta().y() -> see example!!! : https://doc.qt.io/qt-5/qwheelevent.html#angleDelta
+	}
+
+	if (_scroll_parent->horizontalScrollBar())
+	{
+		auto posWidthRel = (mPos.x() / imSize.width()); ////Relation Mauspos to Width of Image
+
+		//set horizontal scrollbar to mouse position
+		QScrollBar* horizontalScroll = _scroll_parent->horizontalScrollBar();
+		double horizScrollSpace = horizontalScroll->maximum() - horizontalScroll->minimum(); // general calculating of moving-space
+		horizontalScroll->setValue(horizScrollSpace * posWidthRel);
+	}
 }
 
 void ImageCanvas::alphaChanged(double alpha) {
@@ -144,8 +182,13 @@ void ImageCanvas::mouseMoveEvent(QMouseEvent * e) {
 
 	if (_button_is_pressed) 
 		_drawFillCircle(e);
+	_act_im_size = _image.size() * _scale; //important for adjusting the scrollBars
 
+	//using statusbar to show actual _mouse_pos
+	_ui->statusbar->showMessage("X: " + QString::number(_mouse_pos.x()) + " " +
+		"Y: " + QString::number(_mouse_pos.y()));
 	update();
+
 }
 
 void ImageCanvas::setSizePen(int pen_size) {
