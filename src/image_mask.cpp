@@ -3,7 +3,7 @@
 
 #include <QPainter>
 
-ImageMask::ImageMask() {}
+ImageMask::ImageMask() = default;
 ImageMask::ImageMask(const QString &file, Id2Labels id_labels) {
 	id = mat2QImage(cv::imread(file.toStdString()));
 	color = idToColor(id, id_labels);

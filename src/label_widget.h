@@ -13,7 +13,7 @@ class LabelWidget : public QLabel {
 
 public:
 
-	LabelWidget(const LabelInfo &label, QWidget *parent = Q_NULLPTR, Qt::WindowFlags f = Qt::WindowFlags());
+	explicit LabelWidget(const LabelInfo &label, QWidget *parent = Q_NULLPTR, Qt::WindowFlags f = Qt::WindowFlags());
 
 	
 	void setNewLabel(const LabelInfo &label);
